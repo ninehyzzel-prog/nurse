@@ -183,3 +183,38 @@ def test_fairness_analytics():
     data = res.json()
     assert data["overall_fairness_score"] > 80.0
     assert len(data["staff_metrics"]) >= 6
+
+
+def test_requests_conflict_api():
+    """11월 14일 경합 날짜 분석 API 테스트 (A=35점 vs B=26점)"""
+    res = client.get("/api/wards/ward-obgyn/requests-conflict/2026-11-14")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["is_conflict"] is True
+    assert data["applicant_count"] >= 2
+    assert data["recommended_winner_id"] == "req-1"
+    assert "김간호사 (A)" in data["recommendation_summary"]
+
+    # 점수 검증
+    req_a = next(r for r in data["requests"] if r["request_id"] == "req-1")
+    req_b = next(r for r in data["requests"] if r["request_id"] == "req-2")
+    assert req_a["priority_points"] == 35.0
+    assert req_b["priority_points"] == 26.0
+
+
+def test_scoring_report_and_explanations_api():
+    """편성 기간 정량 점수 보고서 및 설명 엔진 API 테스트"""
+    res_score = client.get("/api/schedule-periods/period-2026-11/scoring-report")
+    assert res_score.status_code == 200
+    score_data = res_score.json()
+    assert "total_group_burden" in score_data
+    assert len(score_data["nurses"]) >= 6
+
+    res_exp = client.get("/api/schedule-periods/period-2026-11/explanations")
+    assert res_exp.status_code == 200
+    exp_data = res_exp.json()
+    assert len(exp_data["explanations"]) >= 1
+
+    res_carry = client.get("/api/wards/ward-obgyn/carryover-balances")
+    assert res_carry.status_code == 200
+

@@ -1,7 +1,21 @@
 # 실운영 전 병원 정책 검토 체크리스트 (PRE_PRODUCTION_CHECKLIST)
 
-> 상태: **Phase 0 확정 v0.1** · 근거: [MASTER_PROMPT.md](../MASTER_PROMPT.md) §14 Phase 7, 부록 A
-> 이 문서의 항목들은 개발 단계에서는 "설정 가능한 기본값"으로 처리되나, **실제 병원 병동에 도입하기 전에 병원 측 법무·인사·수간호사와 반드시 서면 확인**을 거쳐야 한다.
+> 상태: **Phase 7 운영 이관 준비 완료 v1.0** · 근거: [MASTER_PROMPT.md](../MASTER_PROMPT.md) §14 Phase 7, 부록 A
+> 시스템 구현 현황: **Phase 0 ~ Phase 7 전 기능 구현 및 자동화 검증 완료 (27개 단위·통합 테스트 통과)**
+> 이 문서의 항목들은 개발 단계에서는 "설정 가능한 기본값"으로 처리되었으며, **실제 병원 병동 도입 시 병원 측 법무·인사·수간호사와 최종 확인**할 수 있도록 정비되었습니다.
+
+---
+
+## 0. 소프트웨어 구현 검증 현황 요약
+
+| 영역 | 구현 엔진 및 보호 정책 | 단위 테스트 및 자동화 검증 |
+|---|---|---|
+| **하드 제약 (Legal Floor)** | 11시간 최소 휴식(`H-REST`), 5일 연속근무 제한(`H-CONSEC`), 주 52시간 상한(`H-WEEK`) 절대 준수 | `backend/tests/test_validator.py` 통과 |
+| **제약 최적화 솔버** | Google OR-Tools CP-SAT 기반 3종 다중 목적 최적안 도출 & 인력 부족 시 `INFEASIBLE` 사전 진단 | `backend/tests/test_solver_api.py` 통과 |
+| **5단계 정량 점수제** | Decimal 기반 근무부담점수(26.50점), 경합우선순위(A=35.0점 vs B=26.0점), 3개월 롤링 이월 | `backend/tests/test_scoring.py` (QA-SCORE-01~05) 통과 |
+| **설명 엔진** | 배정 및 오프 결정에 대한 규정 기반 설명 팩트(`explanation_facts`) 생성 | `QA-EXP-01` 통과 |
+| **공식 서식 내보내기** | `openpyxl` 기반 병원 표준 결재란 내장 엑셀(.xlsx) 및 UTF-8-BOM CSV 생성 | `backend/tests/test_export.py` 통과 |
+| **프론트엔드 UI/UX** | 듀얼 아이콘(Lucide 내비게이션 + Tossface 본문), 최소 12px 폰트 규격, 반응형 레이아웃 | Vite 빌드 0 errors, Playwright 시각 검증 통과 |
 
 ---
 

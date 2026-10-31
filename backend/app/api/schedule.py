@@ -4,6 +4,7 @@ import uuid
 from decimal import Decimal
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse, Response
 from sqlalchemy.orm import Session
 from backend.app.database import get_db
 import backend.app.models as models
@@ -16,6 +17,7 @@ from backend.app.schemas.schedule import (
     CandidateOut,
 )
 from backend.app.services.validator import ScheduleValidator
+from backend.app.services.export_service import ExportService
 from backend.app.services.nurse_solver import (
     NurseScheduleSolver,
     StaffInput,
@@ -322,6 +324,40 @@ def publish_schedule_version(
         "status": ver.status,
         "is_forced": force,
     }
+
+
+@router.get("/schedule-versions/{version_id}/export/excel")
+def export_schedule_excel(version_id: str, db: Session = Depends(get_db)):
+    """공식 병원 근무표 엑셀(.xlsx) 파일 다운로드"""
+    try:
+        excel_stream = ExportService.generate_excel(version_id, db)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    filename = f"schedule_{version_id}_{datetime.datetime.now().strftime('%Y%m%d')}.xlsx"
+    return StreamingResponse(
+        excel_stream,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/schedule-versions/{version_id}/export/csv")
+def export_schedule_csv(version_id: str, db: Session = Depends(get_db)):
+    """한국어 엑셀 호환 UTF-8-BOM CSV 파일 다운로드"""
+    try:
+        csv_text = ExportService.generate_csv(version_id, db)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    filename = f"schedule_{version_id}_{datetime.datetime.now().strftime('%Y%m%d')}.csv"
+    # BOM 추가 for Excel compatibility
+    csv_bytes = ("\ufeff" + csv_text).encode("utf-8")
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 # =========================================================================

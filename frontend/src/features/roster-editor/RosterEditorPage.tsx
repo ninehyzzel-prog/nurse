@@ -8,7 +8,8 @@ import {
   ChevronRight, 
   X,
   Check,
-  Plus
+  Plus,
+  Download
 } from 'lucide-react';
 import {
   fetchSchedulePeriod,
@@ -16,6 +17,8 @@ import {
   validateScheduleVersion,
   applyScheduleCandidate,
   fetchLatestScheduleRun,
+  getExcelExportUrl,
+  getCsvExportUrl,
   type ValidationReport,
   type ApiCandidate,
 } from '../../api/scheduleApi';
@@ -306,6 +309,25 @@ export const RosterEditorPage: React.FC = () => {
             <TossIcon name="people" size={14} style={{ marginRight: '4px' }} />
             <span>인력 현황</span>
           </button>
+
+          <div className="export-btn-group">
+            <button 
+              className="action-btn export-btn"
+              title="병원 공식 서식 엑셀 파일 다운로드"
+              onClick={() => window.open(getExcelExportUrl(versionId), '_blank')}
+            >
+              <Download size={13} style={{ marginRight: '4px' }} />
+              <span>엑셀 (.xlsx)</span>
+            </button>
+            <button 
+              className="action-btn export-btn"
+              title="한국어 호환 UTF-8-BOM CSV 다운로드"
+              onClick={() => window.open(getCsvExportUrl(versionId), '_blank')}
+            >
+              <Download size={13} style={{ marginRight: '4px' }} />
+              <span>CSV</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -907,6 +929,24 @@ export const RosterEditorPage: React.FC = () => {
         .action-btn.active {
           ring: 2px solid #0F172A;
           border-color: #0F172A;
+        }
+
+        .export-btn-group {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-left: 6px;
+          padding-left: 8px;
+          border-left: 1px solid #E2E8F0;
+        }
+        .action-btn.export-btn {
+          background-color: #F8FAFC;
+          color: #1E293B;
+          border-color: #CBD5E1;
+        }
+        .action-btn.export-btn:hover {
+          background-color: #F1F5F9;
+          border-color: #94A3B8;
         }
 
         /* Linear Alert Banner */
