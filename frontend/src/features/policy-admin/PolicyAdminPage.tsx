@@ -6,8 +6,10 @@ import {
   Plus, 
   CheckCircle2, 
   Clock,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Palette
 } from 'lucide-react';
+import { useShiftColors } from '../../context/ShiftColorContext';
 
 const DOMAIN_RULES_LIST = [
   { id: 'rule-rest', ruleType: 'H-REST', hardSoft: 'HARD', parameter: '660분 (11시간)', justification: '근무 종료 후 다음 근무 시작 전 최소 11시간 휴식 보장', legalFloor: true },
@@ -19,6 +21,7 @@ const DOMAIN_RULES_LIST = [
 ];
 
 export const PolicyAdminPage: React.FC = () => {
+  const { openColorModal } = useShiftColors();
   const [templates, setTemplates] = useState<ShiftTemplate[]>(MOCK_SHIFT_TEMPLATES);
   const [policyVersion, setPolicyVersion] = useState<PolicyVersion>(MOCK_POLICY_V1);
   const [newVersionDraft, setNewVersionDraft] = useState(false);
@@ -81,14 +84,24 @@ export const PolicyAdminPage: React.FC = () => {
             <Clock size={14} />
             <span className="title-text">병동 근무 템플릿 목록 (Shift Templates)</span>
           </div>
-          <button
-            className="btn-add-shift"
-            onClick={handleAddEveningShift}
-            disabled={templates.some((t) => t.code === 'EVENING')}
-          >
-            <Plus size={13} />
-            <span>3교대 이브닝(E) 템플릿 추가</span>
-          </button>
+          <div className="panel-actions">
+            <button
+              className="btn-color-manage"
+              onClick={openColorModal}
+              title="교대근무 배지 색상 관리"
+            >
+              <Palette size={13} />
+              <span>배지 색상 커스텀</span>
+            </button>
+            <button
+              className="btn-add-shift"
+              onClick={handleAddEveningShift}
+              disabled={templates.some((t) => t.code === 'EVENING')}
+            >
+              <Plus size={13} />
+              <span>3교대 이브닝(E) 템플릿 추가</span>
+            </button>
+          </div>
         </div>
 
         <div className="table-wrapper">
@@ -271,6 +284,30 @@ export const PolicyAdminPage: React.FC = () => {
         .toolbar-sub {
           font-size: 12px;
           color: var(--color-text-muted);
+        }
+        .panel-actions {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .btn-color-manage {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 28px;
+          padding: 0 10px;
+          background-color: #F8FAFC;
+          border: 1px solid #CBD5E1;
+          color: #1E293B;
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.12s;
+        }
+        .btn-color-manage:hover {
+          background-color: #F1F5F9;
+          border-color: #94A3B8;
         }
         .btn-add-shift {
           display: inline-flex;

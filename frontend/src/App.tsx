@@ -15,11 +15,14 @@ import { AutoSchedulePage } from './features/auto-schedule/AutoSchedulePage';
 import { PolicyAdminPage } from './features/policy-admin/PolicyAdminPage';
 import { StaffAdminPage } from './features/staff-admin/StaffAdminPage';
 import { FairnessPage } from './features/fairness/FairnessPage';
+import { ShiftColorProvider } from './context/ShiftColorContext';
+import { ShiftColorModal } from './components/ui/ShiftColorModal';
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Routes>
+    <ShiftColorProvider>
+      <BrowserRouter>
+        <Routes>
         {/* 루트 접속 시 간호사 모바일 내 근무표로 리다이렉트 */}
         <Route path="/" element={<Navigate to="/me/schedule" replace />} />
 
@@ -52,6 +55,8 @@ export const App: React.FC = () => {
         {/* 404 fallback */}
         <Route path="*" element={<Navigate to="/me/schedule" replace />} />
       </Routes>
+      <ShiftColorModal />
     </BrowserRouter>
+  </ShiftColorProvider>
   );
 };

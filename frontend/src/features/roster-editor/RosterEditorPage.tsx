@@ -13,8 +13,10 @@ import {
   RefreshCw, 
   Pin,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  Palette
 } from 'lucide-react';
+import { useShiftColors } from '../../context/ShiftColorContext';
 import {
   fetchSchedulePeriod,
   updateAssignment,
@@ -39,6 +41,7 @@ type ViewMode = 'STAFF' | 'MONTH' | 'WEEK';
 
 export const RosterEditorPage: React.FC = () => {
   const { periodId: routePeriodId } = useParams<{ periodId?: string }>();
+  const { colors, openColorModal } = useShiftColors();
 
   // 1. 기간 및 버전 상태 (URL 파라미터 파싱)
   const initialYear = useMemo(() => {
@@ -571,9 +574,9 @@ export const RosterEditorPage: React.FC = () => {
                 <span className="m-val font-mono">{wardOverallStats.totalOff}건</span>
               </div>
               <div className="shift-counts-group">
-                <span className="count-tag d">D <strong>{wardOverallStats.totalD}</strong></span>
-                <span className="count-tag n">N <strong>{wardOverallStats.totalN}</strong></span>
-                <span className="count-tag off">OFF <strong>{wardOverallStats.totalOff}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.DAY.bg, color: colors.DAY.text }}>D <strong>{wardOverallStats.totalD}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.NIGHT.bg, color: colors.NIGHT.text }}>N <strong>{wardOverallStats.totalN}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.OFF.bg, color: colors.OFF.text }}>OFF <strong>{wardOverallStats.totalOff}</strong></span>
               </div>
               <div className="fatigue-score-tag" title="병동 평균 부담점수">
                 <span className="score-dot" />
@@ -590,9 +593,9 @@ export const RosterEditorPage: React.FC = () => {
                 <span className="m-val font-mono">{currentStaffStat.off}일</span>
               </div>
               <div className="shift-counts-group">
-                <span className="count-tag d">D <strong>{currentStaffStat.d}</strong></span>
-                <span className="count-tag n">N <strong>{currentStaffStat.n}</strong></span>
-                <span className="count-tag off">OFF <strong>{currentStaffStat.off}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.DAY.bg, color: colors.DAY.text }}>D <strong>{currentStaffStat.d}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.NIGHT.bg, color: colors.NIGHT.text }}>N <strong>{currentStaffStat.n}</strong></span>
+                <span className="count-tag" style={{ backgroundColor: colors.OFF.bg, color: colors.OFF.text }}>OFF <strong>{currentStaffStat.off}</strong></span>
               </div>
               <div className="fatigue-score-tag" title="개인 부담점수">
                 <span className="score-dot" />
@@ -623,6 +626,15 @@ export const RosterEditorPage: React.FC = () => {
 
         {/* 우측: 서랍 액션 버튼 & 내보내기 */}
         <div className="toolbar-right">
+          <button 
+            className="action-btn color-manage-btn"
+            onClick={openColorModal}
+            title="교대근무 배지 색상 관리"
+          >
+            <Palette size={13} style={{ marginRight: '4px' }} />
+            <span>색상 관리</span>
+          </button>
+
           <button 
             className={`action-btn optimize ${activeDrawer === 'AI_OPTIMIZE' ? 'active' : ''}`}
             onClick={() => setActiveDrawer(activeDrawer === 'AI_OPTIMIZE' ? 'NONE' : 'AI_OPTIMIZE')}
@@ -753,13 +765,16 @@ export const RosterEditorPage: React.FC = () => {
                           const tId = assign?.shiftTemplateId || 'shift-off';
                           const isPinned = assign?.isPinned || false;
 
-                          let badgeClass = 'cell-shift-off';
+                          let badgeBg = colors.OFF.bg;
+                          let badgeText = colors.OFF.text;
                           let label = 'OFF';
                           if (tId === 'shift-day') {
-                            badgeClass = 'cell-shift-day';
+                            badgeBg = colors.DAY.bg;
+                            badgeText = colors.DAY.text;
                             label = 'D';
                           } else if (tId === 'shift-night') {
-                            badgeClass = 'cell-shift-night';
+                            badgeBg = colors.NIGHT.bg;
+                            badgeText = colors.NIGHT.text;
                             label = 'N';
                           }
 
@@ -771,7 +786,10 @@ export const RosterEditorPage: React.FC = () => {
                               onContextMenu={(e) => handleTogglePin(staff.id, m.dateStr, e)}
                               title={`${staff.display_name} | ${m.dateStr} (${label})\n클릭: 교대 순환 (D->N->OFF)\n우클릭: 핀 고정 토글`}
                             >
-                              <div className={`matrix-shift-pill ${badgeClass}`}>
+                              <div 
+                                className="matrix-shift-pill"
+                                style={{ backgroundColor: badgeBg, color: badgeText }}
+                              >
                                 <span className="shift-text font-mono">{label}</span>
                                 {isPinned && (
                                   <span 
@@ -854,9 +872,9 @@ export const RosterEditorPage: React.FC = () => {
                 ))}
               </select>
               <div className="legend-strip">
-                <span className="legend-item"><span className="dot d" /> 데이 (D)</span>
-                <span className="legend-item"><span className="dot n" /> 나이트 (N)</span>
-                <span className="legend-item"><span className="dot off" /> 오프 (OFF)</span>
+                <span className="legend-item"><span className="dot" style={{ backgroundColor: colors.DAY.bg }} /> 데이 (D)</span>
+                <span className="legend-item"><span className="dot" style={{ backgroundColor: colors.NIGHT.bg }} /> 나이트 (N)</span>
+                <span className="legend-item"><span className="dot" style={{ backgroundColor: colors.OFF.bg }} /> 오프 (OFF)</span>
                 <span className="legend-item"><Pin size={11} /> 핀 고정</span>
               </div>
             </div>
@@ -885,13 +903,16 @@ export const RosterEditorPage: React.FC = () => {
                 const isSun = dow === 0;
                 const isSat = dow === 6;
 
-                let badgeClass = 'cell-shift-off';
+                let badgeBg = colors.OFF.bg;
+                let badgeText = colors.OFF.text;
                 let label = 'OFF';
                 if (tId === 'shift-day') {
-                  badgeClass = 'cell-shift-day';
+                  badgeBg = colors.DAY.bg;
+                  badgeText = colors.DAY.text;
                   label = '데이 (D)';
                 } else if (tId === 'shift-night') {
-                  badgeClass = 'cell-shift-night';
+                  badgeBg = colors.NIGHT.bg;
+                  badgeText = colors.NIGHT.text;
                   label = '나이트 (N)';
                 }
 
@@ -915,7 +936,10 @@ export const RosterEditorPage: React.FC = () => {
 
                     <div className="cell-content">
                       {isCurrentMonth && (
-                        <div className={`cal-shift-badge ${badgeClass}`}>
+                        <div 
+                          className="cal-shift-badge"
+                          style={{ backgroundColor: badgeBg, color: badgeText }}
+                        >
                           <span>{label}</span>
                         </div>
                       )}
@@ -989,16 +1013,19 @@ export const RosterEditorPage: React.FC = () => {
                           const tId = assign?.shiftTemplateId || 'shift-off';
                           const isPinned = assign?.isPinned || false;
 
-                          let badgeClass = 'cell-shift-off';
+                          let badgeBg = colors.OFF.bg;
+                          let badgeText = colors.OFF.text;
                           let label = 'OFF';
                           let timeStr = '휴무';
                           if (tId === 'shift-day') {
-                            badgeClass = 'cell-shift-day';
+                            badgeBg = colors.DAY.bg;
+                            badgeText = colors.DAY.text;
                             label = '데이';
                             timeStr = '08:00 - 18:00';
                             weekWorkCount++;
                           } else if (tId === 'shift-night') {
-                            badgeClass = 'cell-shift-night';
+                            badgeBg = colors.NIGHT.bg;
+                            badgeText = colors.NIGHT.text;
                             label = '나이트';
                             timeStr = '18:00 - 익일 08:00';
                             weekWorkCount++;
@@ -1011,7 +1038,10 @@ export const RosterEditorPage: React.FC = () => {
                               onClick={() => handleToggleShift(staff.id, m.dateStr)}
                               onContextMenu={(e) => handleTogglePin(staff.id, m.dateStr, e)}
                             >
-                              <div className={`week-shift-card ${badgeClass}`}>
+                              <div 
+                                className="week-shift-card"
+                                style={{ backgroundColor: badgeBg, color: badgeText }}
+                              >
                                 <div className="card-top">
                                   <span className="card-label">{label}</span>
                                   {isPinned && <Pin size={10} />}
@@ -1623,6 +1653,16 @@ export const RosterEditorPage: React.FC = () => {
           background-color: #F8FAFC;
           color: #0F172A;
         }
+        .action-btn.color-manage-btn {
+          background-color: #F8FAFC;
+          color: #334155;
+          border-color: #CBD5E1;
+        }
+        .action-btn.color-manage-btn:hover {
+          background-color: #F1F5F9;
+          color: #0F172A;
+          border-color: #94A3B8;
+        }
         .action-btn.active {
           border-color: #0F172A;
           background-color: #F1F5F9;
@@ -1812,13 +1852,18 @@ export const RosterEditorPage: React.FC = () => {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 28px;
-          border-radius: 5px;
-          font-weight: 700;
+          width: 34px;
+          height: 24px;
+          border-radius: 9999px;
+          font-weight: 800;
           font-size: 12px;
           position: relative;
           user-select: none;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+          transition: transform 0.08s, box-shadow 0.08s;
+        }
+        .matrix-shift-pill:hover {
+          transform: scale(1.05);
         }
         .cell-shift-day {
           background-color: #FFE4E6;
@@ -2069,10 +2114,13 @@ export const RosterEditorPage: React.FC = () => {
         .cal-shift-badge {
           display: inline-flex;
           align-items: center;
-          padding: 4px 8px;
-          border-radius: 5px;
+          justify-content: center;
+          padding: 3px 12px;
+          border-radius: 9999px;
           font-size: 12px;
-          font-weight: 700;
+          font-weight: 800;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+          letter-spacing: 0.02em;
         }
 
         .cell-footer {

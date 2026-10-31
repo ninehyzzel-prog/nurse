@@ -6,10 +6,13 @@ import { TossIcon } from '../../components/ui/TossIcon';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  ArrowRight
+  ArrowRight,
+  Palette
 } from 'lucide-react';
+import { useShiftColors } from '../../context/ShiftColorContext';
 
 export const MySchedulePage: React.FC = () => {
+  const { colors, openColorModal } = useShiftColors();
   const [selectedDay, setSelectedDay] = useState<number>(24); // 10월 24일 기본 선택
 
   const daysInMonth = 31;
@@ -45,13 +48,36 @@ export const MySchedulePage: React.FC = () => {
             <button className="arrow-btn" aria-label="이전 달"><ChevronLeft size={16} /></button>
             <button className="arrow-btn" aria-label="다음 달"><ChevronRight size={16} /></button>
           </div>
+          <button 
+            className="btn-color-palette" 
+            onClick={openColorModal}
+            title="근무 배지 색상 관리"
+          >
+            <Palette size={13} style={{ marginRight: '3px' }} />
+            <span>색상</span>
+          </button>
         </div>
 
         {/* 미니멀 통계 칩스 */}
         <div className="summary-chips-row">
-          <span className="sum-chip d">D <strong>8</strong></span>
-          <span className="sum-chip n">N <strong>8</strong></span>
-          <span className="sum-chip off">OFF <strong>10</strong></span>
+          <span 
+            className="sum-chip d" 
+            style={{ backgroundColor: colors.DAY.bg, color: colors.DAY.text }}
+          >
+            D <strong>8</strong>
+          </span>
+          <span 
+            className="sum-chip n" 
+            style={{ backgroundColor: colors.NIGHT.bg, color: colors.NIGHT.text }}
+          >
+            N <strong>8</strong>
+          </span>
+          <span 
+            className="sum-chip off" 
+            style={{ backgroundColor: colors.OFF.bg, color: colors.OFF.text }}
+          >
+            OFF <strong>10</strong>
+          </span>
           <span className="sum-chip rest" title="근무 간 11시간 휴식 준수">
             <TossIcon name="shield" size={12} style={{ marginRight: '3px' }} /> 100% 보장
           </span>
@@ -221,8 +247,27 @@ export const MySchedulePage: React.FC = () => {
         .month-nav {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          gap: 8px;
           margin-bottom: 8px;
+        }
+        .btn-color-palette {
+          margin-left: auto;
+          display: inline-flex;
+          align-items: center;
+          background-color: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          color: #475569;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 3px 8px;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.12s;
+        }
+        .btn-color-palette:hover {
+          background-color: #F1F5F9;
+          color: #0F172A;
+          border-color: #CBD5E1;
         }
         .month-text {
           font-size: 17px;

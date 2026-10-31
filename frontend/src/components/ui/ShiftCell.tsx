@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ShiftTemplate } from '../../types';
 import { Pin } from 'lucide-react';
+import { useShiftColors } from '../../context/ShiftColorContext';
 
 interface ShiftCellProps {
   template?: ShiftTemplate;
@@ -19,37 +20,27 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
   onClick,
   className = '',
 }) => {
+  const { colors } = useShiftColors();
+
   const isOff = !template || template.code === 'OFF';
   const code = isOff ? 'OFF' : template.code;
 
-  // Linear / Shadcn 정제된 디자인 토큰
-  const badgeStyle = isOff
-    ? {
-        bg: '#F8FAFC',
-        text: '#475569',
-        border: '#E2E8F0',
-        label: '오프',
-      }
-    : code === 'DAY'
-    ? {
-        bg: '#FFF1F2',
-        text: '#E11D48',
-        border: '#FFE4E6',
-        label: '데이',
-      }
-    : code === 'NIGHT'
-    ? {
-        bg: '#F0FDF4',
-        text: '#166534',
-        border: '#DCFCE7',
-        label: '나이트',
-      }
-    : {
-        bg: '#FFF7ED',
-        text: '#C2410C',
-        border: '#FFEDD5',
-        label: '이브닝',
-      };
+  // 동적 테마 색상 적용 (기본: D 핑크, N 연두, OFF 하늘색)
+  const currentTheme =
+    code === 'DAY'
+      ? colors.DAY
+      : code === 'NIGHT'
+      ? colors.NIGHT
+      : code === 'EVENING'
+      ? colors.EVENING
+      : colors.OFF;
+
+  const bg = currentTheme.bg;
+  const textColor = currentTheme.text;
+  const border = currentTheme.border || bg;
+  const label = isCompact 
+    ? (code === 'DAY' ? 'D' : code === 'NIGHT' ? 'N' : code === 'EVENING' ? 'E' : 'OFF')
+    : currentTheme.label;
 
   return (
     <div
@@ -58,80 +49,74 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
           onClick?.();
         }
       }}
-      className={`linear-shift-badge ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
+      className={`shift-badge-capsule ${isCompact ? 'compact' : ''} ${className}`}
       style={{
-        backgroundColor: badgeStyle.bg,
-        color: badgeStyle.text,
-        borderColor: badgeStyle.border,
+        backgroundColor: bg,
+        color: textColor,
+        borderColor: border,
       }}
-      title={template ? `${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal})` : '오프 (OFF)'}
     >
-      <span className="badge-code font-mono">{code === 'OFF' ? 'OFF' : code.slice(0, 1)}</span>
-      {!isCompact && <span className="badge-name">{badgeStyle.label}</span>}
-      {showTime && template && (
+      <span className="badge-text font-mono">{label}</span>
+
+      {showTime && !isOff && (
         <span className="badge-time font-mono">
-          {template.startsAtLocal.slice(0, 5)}
+          {template?.startsAtLocal || '08:00'}
         </span>
       )}
+
       {isPinned && (
-        <span className="pin-indicator" title="고정(Pin)">
-          <Pin size={9} strokeWidth={2.4} />
+        <span className="badge-pin-icon" title="고정된 근무">
+          <Pin size={isCompact ? 9 : 11} />
         </span>
       )}
 
       <style>{`
-        .linear-shift-badge {
+        .shift-badge-capsule {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          padding: 4px 8px;
-          border-radius: 6px;
+          justify-content: center;
+          gap: 4px;
+          border-radius: 9999px;
           border: 1px solid transparent;
-          font-size: 12px;
-          font-weight: 600;
-          line-height: 1.2;
-          cursor: pointer;
-          transition: background-color 0.12s, border-color 0.12s, transform 0.08s;
-          user-select: none;
-          max-width: 100%;
-        }
-        .linear-shift-badge:hover {
-          filter: brightness(0.97);
-          transform: translateY(-0.5px);
-        }
-        .linear-shift-badge.compact {
-          padding: 2px 7px;
-          gap: 3px;
-          font-size: 12px;
-          border-radius: 5px;
-        }
-        .badge-code {
           font-weight: 700;
-          font-size: 12px;
-          letter-spacing: -0.01em;
+          cursor: pointer;
+          user-select: none;
+          transition: transform 0.08s, box-shadow 0.08s;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+          padding: 4px 10px;
+          min-width: 48px;
+          height: 26px;
         }
-        .compact .badge-code {
-          font-size: 12px;
+        .shift-badge-capsule:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
         }
-        .badge-name {
+        .shift-badge-capsule:active {
+          transform: translateY(0);
+        }
+        .shift-badge-capsule.compact {
+          padding: 2px 8px;
+          min-width: 38px;
+          height: 22px;
           font-size: 12px;
-          font-weight: 500;
-          opacity: 0.9;
+          letter-spacing: 0.02em;
+        }
+        .badge-text {
+          font-size: 12px;
+          font-weight: 800;
+          line-height: 1;
         }
         .badge-time {
           font-size: 12px;
-          opacity: 0.7;
-          margin-left: 2px;
+          opacity: 0.9;
         }
-        .pin-indicator {
-          margin-left: auto;
+        .badge-pin-icon {
           display: flex;
           align-items: center;
-          opacity: 0.7;
+          opacity: 0.9;
         }
       `}</style>
     </div>
