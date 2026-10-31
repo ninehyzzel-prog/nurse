@@ -1,3 +1,5 @@
+@import url('https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css');
+
 :root {
   /* ==========================================================================
      1. 마더케어 (MotherCare) OB/GYN Rose Palette
@@ -105,6 +107,7 @@
 
   --font-family-sans: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-family-tossface: "Tossface", -apple-system, BlinkMacSystemFont, "Pretendard Variable", sans-serif;
 
   /* Typography Scales (Minimum 12px rule enforced across the system) */
   --text-micro: 12px;
@@ -195,4 +198,17 @@ a {
 :focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
+}
+
+/* Tossface (토스페이스) Icon Utility */
+.tossface {
+  font-family: var(--font-family-tossface);
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  user-select: none;
+  font-feature-settings: normal;
 }

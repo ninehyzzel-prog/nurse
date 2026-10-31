@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { MOCK_SHIFT_TEMPLATES, generateMockAssignments } from '../../data/mockData';
 import type { ShiftAssignment } from '../../types';
 import { ShiftCell } from '../../components/ui/ShiftCell';
+import { TossIcon } from '../../components/ui/TossIcon';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Wand2, 
-  Users, 
-  Calendar as CalendarIcon, 
   X,
-  Sparkles,
   Check,
   Plus
 } from 'lucide-react';
@@ -265,12 +260,12 @@ export const RosterEditorPage: React.FC = () => {
             <div className={`validation-status-pill ${validationReport.is_feasible ? 'valid' : 'invalid'}`} title="규칙 준수 여부">
               {validationReport.is_feasible ? (
                 <>
-                  <CheckCircle2 size={12} />
+                  <TossIcon name="check" size={12} style={{ marginRight: '4px' }} />
                   <span>적합 (규칙 100% 준수)</span>
                 </>
               ) : (
                 <>
-                  <AlertTriangle size={12} />
+                  <TossIcon name="warning" size={12} style={{ marginRight: '4px' }} />
                   <span>위반 {validationReport.error_count}건</span>
                 </>
               )}
@@ -284,7 +279,7 @@ export const RosterEditorPage: React.FC = () => {
             className={`action-btn optimize ${activeDrawer === 'AI_OPTIMIZE' ? 'active' : ''}`}
             onClick={() => setActiveDrawer(activeDrawer === 'AI_OPTIMIZE' ? 'NONE' : 'AI_OPTIMIZE')}
           >
-            <Wand2 size={14} strokeWidth={2} />
+            <TossIcon name="robot" size={14} style={{ marginRight: '4px' }} />
             <span>AI 최적화</span>
           </button>
 
@@ -292,7 +287,7 @@ export const RosterEditorPage: React.FC = () => {
             className={`action-btn conflict ${activeDrawer === 'CONFLICT' ? 'active' : ''}`}
             onClick={() => setActiveDrawer(activeDrawer === 'CONFLICT' ? 'NONE' : 'CONFLICT')}
           >
-            <AlertTriangle size={14} className="warn-icon" strokeWidth={2.2} />
+            <TossIcon name="warning" size={14} style={{ marginRight: '4px' }} />
             <span>OFF 충돌 (1)</span>
           </button>
 
@@ -300,7 +295,7 @@ export const RosterEditorPage: React.FC = () => {
             className={`action-btn subtle ${activeDrawer === 'REQUEST' ? 'active' : ''}`}
             onClick={() => setActiveDrawer(activeDrawer === 'REQUEST' ? 'NONE' : 'REQUEST')}
           >
-            <CalendarIcon size={14} strokeWidth={1.8} />
+            <TossIcon name="calendar" size={14} style={{ marginRight: '4px' }} />
             <span>신청 관리</span>
           </button>
 
@@ -308,8 +303,8 @@ export const RosterEditorPage: React.FC = () => {
             className={`action-btn subtle ${activeDrawer === 'STAFF' ? 'active' : ''}`}
             onClick={() => setActiveDrawer(activeDrawer === 'STAFF' ? 'NONE' : 'STAFF')}
           >
-            <Users size={14} strokeWidth={1.8} />
-            <span>인력</span>
+            <TossIcon name="people" size={14} style={{ marginRight: '4px' }} />
+            <span>인력 현황</span>
           </button>
         </div>
       </header>
@@ -317,14 +312,14 @@ export const RosterEditorPage: React.FC = () => {
       {/* 시스템 알림 배너 (있을 때만 표시) */}
       {errorMessage && (
         <div className="linear-banner error">
-          <AlertTriangle size={14} />
+          <TossIcon name="warning" size={14} style={{ marginRight: '4px' }} />
           <span>{errorMessage}</span>
           <button className="banner-close" onClick={() => setErrorMessage(null)}><X size={12} /></button>
         </div>
       )}
       {successMessage && (
         <div className="linear-banner success">
-          <CheckCircle2 size={14} />
+          <TossIcon name="check" size={14} style={{ marginRight: '4px' }} />
           <span>{successMessage}</span>
           <button className="banner-close" onClick={() => setSuccessMessage(null)}><X size={12} /></button>
         </div>
@@ -372,13 +367,19 @@ export const RosterEditorPage: React.FC = () => {
                       <span className="subtle-holiday">한글날</span>
                     )}
                     {isCurrentMonth && day === 3 && (
-                      <span className="cell-note-dot pink" title="희망 근무 반영">♥</span>
+                      <span className="cell-note-dot pink" title="희망 근무 반영">
+                        <TossIcon name="heart" size={12} />
+                      </span>
                     )}
                     {isCurrentMonth && day === 21 && (
-                      <span className="cell-note-dot blue" title="신청 승인">●</span>
+                      <span className="cell-note-dot blue" title="신청 승인">
+                        <TossIcon name="sparkles" size={12} />
+                      </span>
                     )}
                     {isCurrentMonth && day === 31 && (
-                      <span className="cell-note-icon" title="휴가 예정">✈</span>
+                      <span className="cell-note-icon" title="휴가 예정">
+                        <TossIcon name="airplane" size={12} />
+                      </span>
                     )}
                   </div>
 
@@ -410,25 +411,25 @@ export const RosterEditorPage: React.FC = () => {
               <div className="drawer-title-group">
                 {activeDrawer === 'AI_OPTIMIZE' && (
                   <>
-                    <Wand2 size={16} className="drawer-icon" />
+                    <TossIcon name="robot" size={18} style={{ marginRight: '6px' }} />
                     <h3>AI 최적화 자동 편성</h3>
                   </>
                 )}
                 {activeDrawer === 'CONFLICT' && (
                   <>
-                    <AlertTriangle size={16} className="drawer-icon warn" />
+                    <TossIcon name="warning" size={18} style={{ marginRight: '6px' }} />
                     <h3>10월 10일 OFF 신청 충돌</h3>
                   </>
                 )}
                 {activeDrawer === 'REQUEST' && (
                   <>
-                    <CalendarIcon size={16} className="drawer-icon" />
+                    <TossIcon name="calendar" size={18} style={{ marginRight: '6px' }} />
                     <h3>근무 및 휴가 신청</h3>
                   </>
                 )}
                 {activeDrawer === 'STAFF' && (
                   <>
-                    <Users size={16} className="drawer-icon" />
+                    <TossIcon name="people" size={18} style={{ marginRight: '6px' }} />
                     <h3>병동 간호사 인력 현황</h3>
                   </>
                 )}
@@ -516,7 +517,7 @@ export const RosterEditorPage: React.FC = () => {
                   </div>
 
                   <div className="ai-insight-box">
-                    <span className="insight-title"><Sparkles size={13} /> 배정 주요 근거</span>
+                    <span className="insight-title"><TossIcon name="sparkles" size={14} style={{ marginRight: '4px' }} /> 배정 주요 근거</span>
                     <p>• 10월 10일 OFF 신청 3명 충돌 건은 최근 주말 근무 이력과 공정성 점수를 비교하여 이은솔 간호사가 우선 승인되었습니다.</p>
                     <p>• 10월 27일 나이트 인력 부족 구간에 숙련 간호사를 우선 배치했습니다.</p>
                   </div>
@@ -527,7 +528,7 @@ export const RosterEditorPage: React.FC = () => {
               {activeDrawer === 'CONFLICT' && (
                 <div className="drawer-section">
                   <div className="conflict-banner">
-                    <AlertTriangle size={15} />
+                    <TossIcon name="warning" size={15} style={{ marginRight: '6px' }} />
                     <span>10월 10일에 간호사 3명이 동시에 OFF를 신청했습니다.</span>
                   </div>
 

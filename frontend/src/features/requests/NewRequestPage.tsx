@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import type { TimeOffType } from '../../types';
-import { 
-  Check, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Star
-} from 'lucide-react';
+import { Check } from 'lucide-react';
+import { TossIcon } from '../../components/ui/TossIcon';
 
 export const NewRequestPage: React.FC = () => {
   const navigate = useNavigate();
@@ -54,7 +50,7 @@ export const NewRequestPage: React.FC = () => {
         </div>
 
         <div className="deadline-banner">
-          <Clock size={12} />
+          <TossIcon name="clock" size={13} style={{ marginRight: '4px' }} />
           <span>11월 근무표 신청 마감: <strong>10월 20일 24:00</strong> (D-4)</span>
         </div>
       </div>
@@ -63,7 +59,7 @@ export const NewRequestPage: React.FC = () => {
       <div className="form-card">
         <div className="card-header-row">
           <div className="ch-left">
-            <CalendarIcon size={14} className="icon-slate" />
+            <TossIcon name="calendar" size={15} style={{ marginRight: '6px' }} />
             <span className="ch-title">희망 일자 선택</span>
           </div>
           <span className="selected-tag font-mono">
@@ -130,7 +126,10 @@ export const NewRequestPage: React.FC = () => {
               </div>
               <div className="tile-content">
                 <div className="tile-title-row">
-                  <span className="tile-name">일반 희망 OFF</span>
+                  <span className="tile-name">
+                    <TossIcon name="calendar" size={15} style={{ marginRight: '4px' }} />
+                    일반 희망 OFF
+                  </span>
                   <span className="tile-badge gray">경합 점수 반영</span>
                 </div>
                 <p className="tile-desc">동일 날짜 신청 경합 시 공정성 점수(최근 주말 근무 등)로 자동 조율됩니다.</p>
@@ -147,7 +146,10 @@ export const NewRequestPage: React.FC = () => {
               </div>
               <div className="tile-content">
                 <div className="tile-title-row">
-                  <span className="tile-name">법정 연차 휴가</span>
+                  <span className="tile-name">
+                    <TossIcon name="umbrella" size={15} style={{ marginRight: '4px' }} />
+                    법정 연차 휴가
+                  </span>
                   <span className="tile-badge blue">권리 보장</span>
                 </div>
                 <p className="tile-desc">법정 연차로 우선 배정되며, 잔여 연차(12일)에서 1일 차감됩니다.</p>
@@ -164,7 +166,10 @@ export const NewRequestPage: React.FC = () => {
               </div>
               <div className="tile-content">
                 <div className="tile-title-row">
-                  <span className="tile-name">모성 / 법정보호 휴가</span>
+                  <span className="tile-name">
+                    <TossIcon name="flower" size={15} style={{ marginRight: '4px' }} />
+                    모성 / 법정보호 휴가
+                  </span>
                   <span className="tile-badge green">100% 필수 보장</span>
                 </div>
                 <p className="tile-desc">임신/수유기 간호사 법정 보호 규정으로 솔버에서 최우선 배정됩니다.</p>
@@ -181,7 +186,10 @@ export const NewRequestPage: React.FC = () => {
                 onChange={(e) => setIsImportant(e.target.checked)} 
               />
               <div className="toggle-text">
-                <span className="t-main"><Star size={13} className="star-icon" /> 중요 희망 오프로 지정 (+10점 가산)</span>
+                <span className="t-main">
+                  <TossIcon name="star" size={13} style={{ marginRight: '4px' }} />
+                  중요 희망 오프로 지정 (+10점 가산)
+                </span>
                 <span className="t-sub">연 3회 한도이며, 결혼식·시험 등 불가피한 사정이 있을 때 가산점을 부여합니다.</span>
               </div>
             </label>

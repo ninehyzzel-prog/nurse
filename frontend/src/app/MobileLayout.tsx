@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { Home, Calendar, ClipboardList, Bell, MoreHorizontal, ChevronLeft, Wifi, Battery, CalendarDays } from 'lucide-react';
+import { ChevronLeft, Wifi, Battery } from 'lucide-react';
+import { TossIcon } from '../components/ui/TossIcon';
 
 export const MobileLayout: React.FC = () => {
   const location = useLocation();
@@ -40,10 +41,12 @@ export const MobileLayout: React.FC = () => {
           <div className="header-right">
             {isSchedulePage ? (
               <button className="header-action-btn" title="캘린더 변경">
-                <CalendarDays size={18} strokeWidth={2} />
+                <TossIcon name="calendar" size={18} />
               </button>
             ) : (
-              <span className="ward-pill">3병동</span>
+              <span className="ward-pill">
+                <TossIcon name="flower" size={12} style={{ marginRight: '3px' }} /> 3병동
+              </span>
             )}
           </div>
         </header>
@@ -53,29 +56,29 @@ export const MobileLayout: React.FC = () => {
           <Outlet />
         </main>
 
-        {/* Bottom Tab Bar (iOS Native Style) */}
+        {/* Bottom Tab Bar (Tossface Icon Native Style) */}
         <nav className="mobile-bottom-nav">
           <NavLink to="/admin/roster/2026-11" className="m-nav-item">
-            <Home size={19} strokeWidth={1.9} />
+            <TossIcon name="home" size={20} />
             <span>PC 콘솔</span>
           </NavLink>
           <NavLink to="/me/schedule" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <Calendar size={19} strokeWidth={1.9} />
+            <TossIcon name="calendar" size={20} />
             <span>근무표</span>
           </NavLink>
           <NavLink to="/me/requests/new" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <ClipboardList size={19} strokeWidth={1.9} />
+            <TossIcon name="memo" size={20} />
             <span>신청</span>
           </NavLink>
           <NavLink to="/me/notifications" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
             <div className="bell-wrap">
-              <Bell size={19} strokeWidth={1.9} />
+              <TossIcon name="bell" size={20} />
               <span className="badge-dot" />
             </div>
             <span>알림</span>
           </NavLink>
           <NavLink to="/me/requests" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <MoreHorizontal size={19} strokeWidth={1.9} />
+            <TossIcon name="clipboard" size={20} />
             <span>내역</span>
           </NavLink>
         </nav>

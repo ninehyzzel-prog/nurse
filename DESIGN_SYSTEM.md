@@ -109,28 +109,37 @@
 
 ---
 
-## 5. 아이콘 라이브러리 표준 (Iconography)
+## 5. 아이콘 라이브러리 표준 (Tossface Iconography)
 
-모든 아이콘은 **Lucide React**(`lucide-react`) 벡터 아이콘 라이브러리를 표준으로 사용합니다. (이모지 및 저품질 비트맵 아이콘 영구 금지)
+시스템의 모든 감성적/시각적 아이콘은 토스의 오픈소스 3D 이모지 그래픽 폰트인 **토스페이스(Tossface)**를 표준으로 적용합니다. (내비게이션 화살표 등 UI 구조적 요소는 Lucide와 조화롭게 공존)
 
-### 5.1 아이콘 스펙
-- **기본 크기:** `16px` (컴포넌트 인라인), `18px` (버튼/인풋 접두사), `20px` (탭바/헤더 액션)
-- **Stroke Width:** `1.8px` ~ `2.2px` (시각적 선명함과 정교함 유지)
-- **색상 원칙:** 부모 텍스트의 `currentColor` 상속 또는 시맨틱 상태 색상(`green`, `rose`, `blue`, `amber`) 직접 주입.
+### 5.1 토스페이스 웹폰트 연동
+- **CDN 제공원:** `https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css`
+- **글로벌 폰트 패밀리:** `'Tossface', -apple-system, sans-serif`
+- **전용 컴포넌트:** `<TossIcon name="..." size={...} />` (`src/components/ui/TossIcon.tsx`)
+- **최소 크기 룰:** 시스템 최소 폰트 크기 원칙에 따라 `size >= 12px`가 자동 보장됩니다.
 
-### 5.2 표준 아이콘 매핑표
-| 용도 / 기능 | Lucide React 컴포넌트 | 예시 코드 |
-|---|---|---|
-| 승인 완료 / 정상 | `CheckCircle2`, `CheckCheck` | `<CheckCircle2 size={16} strokeWidth={2.2} />` |
-| 캘린더 / 근무 일정 | `Calendar` | `<Calendar size={16} strokeWidth={2.2} />` |
-| 공지 / 오픈 알림 | `Megaphone` | `<Megaphone size={16} strokeWidth={2.2} />` |
-| 교대 변경 / 인력 스왑 | `ArrowLeftRight` | `<ArrowLeftRight size={16} strokeWidth={2.2} />` |
-| 신청 추가 / 생성 | `Plus` | `<Plus size={16} strokeWidth={2} />` |
-| 이동 / 상세 보기 | `ChevronRight` | `<ChevronRight size={14} />` |
-| 경고 / 제약 위반 | `AlertTriangle`, `AlertCircle` | `<AlertCircle size={16} />` |
-| 잠금 / 법정보호 | `ShieldCheck`, `Lock` | `<ShieldCheck size={16} />` |
-| 시간 / 타이머 | `Clock` | `<Clock size={14} />` |
-| 닫기 | `X` | `<X size={18} />` |
+### 5.2 표준 토스페이스 아이콘 매핑표
+
+| 용도 / 기능 | 글리프 | TossIcon name | 적용 화면 및 컴포넌트 |
+|---|---|---|---|
+| **신청 승인 / 축하** | 💖 | `heart` | 알림 피드, 캘린더 셀 희망 반영 뱃지 |
+| **근무표 / 일정** | 📅 | `calendar` | 탭바, 알림 피드, 캘린더 피커 헤더, 사이드바 |
+| **공지 / 오픈 알림** | 📢 | `megaphone` | 휴가 신청 오픈 알림 |
+| **교대 조율 / 맞교환** | 🔄 | `refresh` | 당직 변경 알림, 빠른 교환 배너 |
+| **정상 완료 / 체크** | ✅ | `check` | 알림 모두 읽음, 유효성 검사 적합 |
+| **알림 센터** | 🔔 | `bell` | 상단 툴바, 모바일 탭바, 알림 헤더 |
+| **연차 / 우산** | ☂️ | `umbrella` | 법정 연차 휴가 타일, 신청 내역 |
+| **휴가 / 비행기** | ✈️ | `airplane` | 캘린더 셀 휴가 예정 표기 |
+| **시간 / 타이머** | ⏱️ | `clock` | 신청 접수 마감 디데이 배너, 근무 시간 |
+| **인력 / 팀원** | 👥 | `people` | 사이드바 인력 관리, 동반 근무 팀원 |
+| **산부인과 / 모성보호**| 🌸 | `flower` | 병동 뱃지, 모성/법정보호 휴가 |
+| **야간 당직 / 나이트** | 🌙 | `moon` | 나이트 근무 요약 및 배정 카드 |
+| **중요 가산점** | ⭐ | `star` | 중요 희망 OFF 지정 (+10점) |
+| **AI 솔버 최적화** | 🤖 | `robot` | 사이드바 AI 편성, 드로어 솔버 트리거 |
+| **설정 / 관리** | ⚙️ | `settings` | 사이드바 환경 설정, 시스템 관리 |
+| **경고 / 규칙 위반** | ⚠️ | `warning` | OFF 충돌 경고, 유효성 검사 위반 |
+| **법정 보호 / 잠금** | 🛡️ | `shield` | 연속근무 및 11시간 휴식 간격 보장 지표 |
 
 ---
 

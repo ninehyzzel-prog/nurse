@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Calendar, 
-  CheckCircle2, 
-  ArrowLeftRight, 
-  ChevronRight, 
-  Clock, 
-  CheckCheck,
-  Megaphone
-} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { TossIcon } from '../../components/ui/TossIcon';
 
 interface NotificationItem {
   id: string;
@@ -78,13 +71,13 @@ export const NotificationsPage: React.FC = () => {
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'LEAVE_APPROVED':
-        return <CheckCircle2 size={16} className="notif-icon green" strokeWidth={2.2} />;
+        return <TossIcon name="heart" size={18} />;
       case 'SCHEDULE_CONFIRMED':
-        return <Calendar size={16} className="notif-icon blue" strokeWidth={2.2} />;
+        return <TossIcon name="calendar" size={18} />;
       case 'REQUEST_OPEN':
-        return <Megaphone size={16} className="notif-icon purple" strokeWidth={2.2} />;
+        return <TossIcon name="megaphone" size={18} />;
       case 'SHIFT_CHANGE':
-        return <ArrowLeftRight size={16} className="notif-icon pink" strokeWidth={2.2} />;
+        return <TossIcon name="refresh" size={18} />;
     }
   };
 
@@ -106,19 +99,22 @@ export const NotificationsPage: React.FC = () => {
       {/* 1. 상단 툴바 */}
       <div className="notif-top-bar">
         <div className="nt-left">
-          <span className="nt-title">알림 목록</span>
+          <span className="nt-title">
+            <TossIcon name="bell" size={16} style={{ marginRight: '6px' }} />
+            알림 목록
+          </span>
           {unreadCount > 0 && (
             <span className="unread-badge font-mono">새 알림 {unreadCount}건</span>
           )}
         </div>
         {unreadCount > 0 && (
           <button className="btn-read-all" onClick={markAllAsRead}>
-            <CheckCheck size={14} /> 모두 읽음
+            <TossIcon name="check" size={13} style={{ marginRight: '4px' }} /> 모두 읽음
           </button>
         )}
       </div>
 
-      {/* 2. 알림 피드 리스트 (Linear 플랫 스타일 & 12px 최소 폰트) */}
+      {/* 2. 알림 피드 리스트 (Linear 플랫 스타일 & 토스페이스 아이콘) */}
       <div className="notifications-feed">
         {notifications.map((item) => (
           <div
@@ -145,7 +141,7 @@ export const NotificationsPage: React.FC = () => {
 
               <div className="nc-bottom-row">
                 <span className="time-text font-mono">
-                  <Clock size={12} /> {item.timeAgo}
+                  <TossIcon name="clock" size={12} style={{ marginRight: '3px' }} /> {item.timeAgo}
                 </span>
                 <span className="go-link">
                   바로가기 <ChevronRight size={13} />

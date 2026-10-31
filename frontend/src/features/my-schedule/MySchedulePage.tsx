@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import { MOCK_SHIFT_TEMPLATES } from '../../data/mockData';
 import { ShiftCell } from '../../components/ui/ShiftCell';
 import { BottomSheet } from '../../components/ui/BottomSheet';
+import { TossIcon } from '../../components/ui/TossIcon';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  Users, 
-  ShieldCheck, 
-  ArrowRight,
-  Clock,
-  Sparkles,
-  HeartHandshake
+  ArrowRight
 } from 'lucide-react';
 
 export const MySchedulePage: React.FC = () => {
@@ -57,7 +53,7 @@ export const MySchedulePage: React.FC = () => {
           <span className="sum-chip n">N <strong>8</strong></span>
           <span className="sum-chip off">OFF <strong>10</strong></span>
           <span className="sum-chip rest" title="근무 간 11시간 휴식 준수">
-            <ShieldCheck size={11} /> 100% 보장
+            <TossIcon name="shield" size={12} style={{ marginRight: '3px' }} /> 100% 보장
           </span>
         </div>
       </div>
@@ -133,7 +129,7 @@ export const MySchedulePage: React.FC = () => {
           </div>
           <div className="shift-time-info">
             <span className="time-range font-mono">
-              <Clock size={12} />
+              <TossIcon name="clock" size={12} style={{ marginRight: '4px' }} />
               {selectedTemplate?.startsAtLocal && selectedTemplate?.endsAtLocal
                 ? `${selectedTemplate.startsAtLocal} ~ ${selectedTemplate.endsAtLocal}`
                 : '종일 휴무 (OFF)'}
@@ -146,7 +142,7 @@ export const MySchedulePage: React.FC = () => {
         {selectedTemplate?.code !== 'OFF' && (
           <div className="colleagues-row">
             <div className="colleagues-left">
-              <Users size={12} className="user-icon" />
+              <TossIcon name="people" size={13} style={{ marginRight: '4px' }} />
               <span>함께 근무: <strong>최서연, 김지은, 정하윤</strong></span>
             </div>
             <span className="shift-lead-pill">수간호사 승인</span>
@@ -157,11 +153,11 @@ export const MySchedulePage: React.FC = () => {
       {/* 4. 빠른 근무 교환/신청 바로가기 배너 */}
       <div className="quick-action-strip">
         <div className="qa-left">
-          <Sparkles size={14} className="qa-icon" />
+          <TossIcon name="sparkles" size={14} style={{ marginRight: '6px' }} />
           <span>이 날짜에 근무 변경이나 OFF가 필요하신가요?</span>
         </div>
         <button className="btn-quick-request" onClick={() => alert('근무 맞교환 신청 페이지로 연결합니다.')}>
-          <HeartHandshake size={13} /> 교환 신청
+          <TossIcon name="refresh" size={13} style={{ marginRight: '4px' }} /> 교환 신청
         </button>
       </div>
 

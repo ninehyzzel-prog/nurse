@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MOCK_REQUESTS } from '../../data/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { Plus, Star, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { TossIcon } from '../../components/ui/TossIcon';
 
 export const RequestListPage: React.FC = () => {
   return (
@@ -22,7 +23,7 @@ export const RequestListPage: React.FC = () => {
         <div className="list-meta-bar">
           <span className="meta-text">신청 내역 총 <strong>{MOCK_REQUESTS.length}건</strong></span>
           <Link to="/me/requests/new" className="btn-add-fast">
-            <Plus size={12} /> 추가 신청
+            <TossIcon name="plus" size={12} style={{ marginRight: '3px' }} /> 추가 신청
           </Link>
         </div>
       </div>
@@ -36,14 +37,21 @@ export const RequestListPage: React.FC = () => {
             ? '법정 연차 휴가'
             : '모성/법정보호 휴가';
 
+          const typeIcon = req.requestType === 'PREFERENCE_OFF'
+            ? 'calendar'
+            : req.requestType === 'ANNUAL_LEAVE'
+            ? 'umbrella'
+            : 'flower';
+
           return (
             <div key={req.id} className="req-row-card">
               <div className="row-top">
                 <div className="type-group">
+                  <TossIcon name={typeIcon} size={15} style={{ marginRight: '4px' }} />
                   <span className="type-text">{typeName}</span>
                   {req.isImportant && (
                     <span className="star-tag font-mono">
-                      <Star size={10} fill="#EAB308" color="#EAB308" /> 중요 +10
+                      <TossIcon name="star" size={12} style={{ marginRight: '2px' }} /> 중요 +10
                     </span>
                   )}
                 </div>
