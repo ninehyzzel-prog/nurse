@@ -33,7 +33,7 @@ export const AdminLayout: React.FC = () => {
         </div>
 
         <nav className="mc-nav">
-          <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
+          <NavLink to="/admin/roster/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={16} strokeWidth={1.8} />
             <span>대시보드</span>
           </NavLink>

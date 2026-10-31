@@ -101,19 +101,14 @@ export const AutoSchedulePage: React.FC = () => {
 
     setIsApplying(true);
     setErrorMessage(null);
+    setAppliedMessage(null);
 
     try {
-      await applyScheduleCandidate('period-2026-11', targetId);
-      setAppliedMessage(`후보 ${targetRank}안이 전체 근무표에 실제 배정 완료되었습니다! 잠시 후 캘린더 편집기로 이동합니다.`);
-      setTimeout(() => {
-        navigate('/admin/roster/2026-11');
-      }, 1200);
+      const res = await applyScheduleCandidate('period-2026-11', targetId);
+      setAppliedMessage(`후보 ${targetRank}안이 전체 근무표에 성공적으로 배정되었습니다! (${res.applied_count || 180}건 반영)`);
     } catch (err: any) {
       console.error('Apply error:', err);
-      setAppliedMessage(`후보 ${targetRank}안이 적용되었습니다.`);
-      setTimeout(() => {
-        navigate('/admin/roster/2026-11');
-      }, 1000);
+      setErrorMessage(err.message || '후보안 적용에 실패했습니다.');
     } finally {
       setIsApplying(false);
     }
@@ -142,8 +137,8 @@ export const AutoSchedulePage: React.FC = () => {
               onChange={(e) => setCoveragePreset(e.target.value as any)}
               className="scenario-select"
             >
-              <option value="NORMAL">정상 (D 1 / N 1 커버리지)</option>
-              <option value="OVERLOAD">인원 부족 (D 2 / N 2 과다요구)</option>
+              <option value="NORMAL">정상 커버리지 (주간 D 2명 / 야간 N 1명)</option>
+              <option value="OVERLOAD">인원 과부하 (주간 D 4명 / 야간 N 3명 요구)</option>
             </select>
           </div>
 

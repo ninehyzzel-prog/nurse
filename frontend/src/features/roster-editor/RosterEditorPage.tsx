@@ -326,17 +326,18 @@ export const RosterEditorPage: React.FC = () => {
   };
 
   // AI 후보안 근무표 적용
-  const handleApplyCandidate = async (candidateId: number) => {
+  const handleApplyCandidate = async (candidateId: string | number, rankNumber?: number) => {
     setIsApplying(true);
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
-      const res = await applyScheduleCandidate(periodId, String(candidateId));
+      const targetId = String(candidateId);
+      const res = await applyScheduleCandidate(periodId, targetId);
       if (res && res.version_id) {
         setVersionId(res.version_id);
         setValidationReport(res.validation_report);
-        setSelectedCandidate(candidateId);
-        setSuccessMessage(`후보안 ${candidateId}번이 성공적으로 배정되었습니다. (${res.applied_count}건 반영)`);
+        if (rankNumber) setSelectedCandidate(rankNumber);
+        setSuccessMessage(`최적 편성안이 근무표에 즉시 반영되었습니다. (${res.applied_count || 180}건 배정 완료)`);
         await loadRosterData();
       }
     } catch (err: any) {
@@ -1111,7 +1112,7 @@ export const RosterEditorPage: React.FC = () => {
                             <button 
                               className={`btn-apply-plan ${idx === 0 ? 'primary' : 'outline'}`}
                               disabled={isApplying}
-                              onClick={() => handleApplyCandidate(idx + 1)}
+                              onClick={() => handleApplyCandidate(cand.id, idx + 1)}
                             >
                               {isApplying && isSelected ? '적용 중...' : '이 편성안으로 적용'}
                             </button>

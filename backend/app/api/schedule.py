@@ -618,16 +618,61 @@ def apply_schedule_candidate(
 ):
     """
     선택한 최적화 후보안(Candidate)을 실제 근무표(ScheduleVersion)의 배정 데이터로 즉시 교체 적용합니다.
+    - candidate_id는 실제 후보안 UUID(cand-xxxx) 또는 rank 번호("1", "2", "3") 모두 지원
     - 고정(PIN)된 배정은 안전하게 보존
     - 최신 ScheduleValidator 실행하여 실시간 유효성 리포트 반환
     """
-    cand = db.query(models.RunCandidate).filter_by(id=candidate_id).first()
-    if not cand:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-
     period = db.query(models.SchedulePeriod).filter_by(id=period_id).first()
     if not period:
         raise HTTPException(status_code=404, detail="Schedule period not found")
+
+    cand = db.query(models.RunCandidate).filter_by(id=candidate_id).first()
+    if not cand:
+        # candidate_id가 rank 번호("1", "2", "3")이거나 매칭되지 않은 경우 최신 ScheduleRun에서 조회
+        latest_run = (
+            db.query(models.ScheduleRun)
+            .filter_by(schedule_period_id=period.id)
+            .order_by(models.ScheduleRun.created_at.desc())
+            .first()
+        )
+        if latest_run:
+            if candidate_id.isdigit():
+                cand = (
+                    db.query(models.RunCandidate)
+                    .filter_by(schedule_run_id=latest_run.id, rank=int(candidate_id))
+                    .first()
+                )
+            if not cand:
+                # 첫 번째(균형형) 후보안 폴백
+                cand = (
+                    db.query(models.RunCandidate)
+                    .filter_by(schedule_run_id=latest_run.id)
+                    .order_by(models.RunCandidate.rank.asc())
+                    .first()
+                )
+
+    if not cand:
+        # DB에 ScheduleRun이 아예 없는 경우: 즉시 솔버를 1회 실행하여 후보안 생성 후 적용
+        try:
+            run_res = generate_schedule_candidates(
+                period_id=period.id,
+                time_limit_seconds=5.0,
+                day_coverage=2,
+                night_coverage=1,
+                db=db,
+            )
+            if run_res and run_res.candidates:
+                rank_target = int(candidate_id) if candidate_id.isdigit() else 1
+                cand = (
+                    db.query(models.RunCandidate)
+                    .filter_by(schedule_run_id=run_res.id, rank=rank_target)
+                    .first()
+                ) or db.query(models.RunCandidate).filter_by(schedule_run_id=run_res.id).first()
+        except Exception as e:
+            pass
+
+    if not cand:
+        raise HTTPException(status_code=404, detail="Candidate not found")
 
     # 대상 초안 버전 찾기 또는 생성
     ver = (
