@@ -1,6 +1,15 @@
 import React from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { ChevronLeft, Wifi, Battery } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  Wifi, 
+  Battery, 
+  Home, 
+  Calendar, 
+  ClipboardList, 
+  Bell, 
+  MoreHorizontal 
+} from 'lucide-react';
 import { TossIcon } from '../components/ui/TossIcon';
 
 export const MobileLayout: React.FC = () => {
@@ -56,29 +65,29 @@ export const MobileLayout: React.FC = () => {
           <Outlet />
         </main>
 
-        {/* Bottom Tab Bar (Tossface Icon Native Style) */}
+        {/* Bottom Tab Bar (iOS Native Style) */}
         <nav className="mobile-bottom-nav">
           <NavLink to="/admin/roster/2026-11" className="m-nav-item">
-            <TossIcon name="home" size={20} />
+            <Home size={19} strokeWidth={1.9} />
             <span>PC 콘솔</span>
           </NavLink>
           <NavLink to="/me/schedule" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <TossIcon name="calendar" size={20} />
+            <Calendar size={19} strokeWidth={1.9} />
             <span>근무표</span>
           </NavLink>
           <NavLink to="/me/requests/new" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <TossIcon name="memo" size={20} />
+            <ClipboardList size={19} strokeWidth={1.9} />
             <span>신청</span>
           </NavLink>
           <NavLink to="/me/notifications" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
             <div className="bell-wrap">
-              <TossIcon name="bell" size={20} />
+              <Bell size={19} strokeWidth={1.9} />
               <span className="badge-dot" />
             </div>
             <span>알림</span>
           </NavLink>
           <NavLink to="/me/requests" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
-            <TossIcon name="clipboard" size={20} />
+            <MoreHorizontal size={19} strokeWidth={1.9} />
             <span>내역</span>
           </NavLink>
         </nav>

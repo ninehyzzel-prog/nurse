@@ -109,15 +109,20 @@
 
 ---
 
-## 5. 아이콘 라이브러리 표준 (Tossface Iconography)
+## 5. 아이콘 라이브러리 표준 (Iconography Strategy)
 
-시스템의 모든 감성적/시각적 아이콘은 토스의 오픈소스 3D 이모지 그래픽 폰트인 **토스페이스(Tossface)**를 표준으로 적용합니다. (내비게이션 화살표 등 UI 구조적 요소는 Lucide와 조화롭게 공존)
+마더케어 UI는 **구조적 내비게이션(Lucide)**과 **콘텐츠 감성 표현(Tossface)**의 역할을 명확히 분리한 듀얼 아이콘 전략을 따릅니다:
 
-### 5.1 토스페이스 웹폰트 연동
-- **CDN 제공원:** `https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css`
-- **글로벌 폰트 패밀리:** `'Tossface', -apple-system, sans-serif`
-- **전용 컴포넌트:** `<TossIcon name="..." size={...} />` (`src/components/ui/TossIcon.tsx`)
-- **최소 크기 룰:** 시스템 최소 폰트 크기 원칙에 따라 `size >= 12px`가 자동 보장됩니다.
+1. **시스템 내비게이션 (Lucide React):**
+   - **PC 사이드바 메뉴 (`AdminLayout`):** 대시보드(`LayoutDashboard`), 근무표(`CalendarDays`), 근무 신청(`ClipboardList`), AI 편성(`Wand2`), 인력 관리(`Users`), 통계(`BarChart3`), 설정(`Settings`), 검색(`Search`), 알림(`Bell`).
+   - **모바일 하단 탭바 (`MobileLayout`):** 홈(`Home`), 근무표(`Calendar`), 신청(`ClipboardList`), 알림(`Bell`), 내역(`MoreHorizontal`).
+   - 선명하고 절제된 1.8~2.0px 스트로크 벡터 아이콘을 사용하여 상시 조작 영역의 높은 시인성을 보장합니다.
+
+2. **콘텐츠 & 시각적 피드백 (Tossface 토스페이스):**
+   - **알림 센터 피드 (`NotificationsPage`):** 승인(`💖`), 확정(`📅`), 안내(`📢`), 조율(`🔄`), 확인(`✅`), 시간(`⏱️`).
+   - **캘린더 셀 특이사항 (`ShiftCell`, `RosterEditorPage`):** 10월 3일 희망근무(`💖`), 10월 21일 승인(`✨`), 10월 31일 휴가(`✈️`).
+   - **신청 및 상태 뱃지:** 법정연차(`☂️`), 모성보호(`🌸`), 중요가산점(`⭐`), AI솔버 상태(`🤖`).
+   - 전용 컴포넌트 `<TossIcon name="..." size={...} />` 사용 (최소 12px 크기 룰 자동 보장).
 
 ### 5.2 표준 토스페이스 아이콘 매핑표
 

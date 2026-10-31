@@ -1,7 +1,17 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
-import { TossIcon } from '../components/ui/TossIcon';
+import { 
+  LayoutDashboard,
+  CalendarDays, 
+  ClipboardList,
+  Wand2, 
+  Users, 
+  BarChart3, 
+  Settings,
+  Search,
+  Bell,
+  ChevronDown,
+} from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
   return (
@@ -24,31 +34,31 @@ export const AdminLayout: React.FC = () => {
 
         <nav className="mc-nav">
           <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="chart" size={16} />
+            <LayoutDashboard size={16} strokeWidth={1.8} />
             <span>대시보드</span>
           </NavLink>
           <NavLink to="/admin/roster/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="calendar" size={16} />
+            <CalendarDays size={16} strokeWidth={1.8} />
             <span>근무표</span>
           </NavLink>
           <NavLink to="/admin/requests/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="memo" size={16} />
+            <ClipboardList size={16} strokeWidth={1.8} />
             <span>근무 신청</span>
           </NavLink>
           <NavLink to="/admin/auto-schedule/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="robot" size={16} />
+            <Wand2 size={16} strokeWidth={1.8} />
             <span>AI 편성</span>
           </NavLink>
           <NavLink to="/admin/staff" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="people" size={16} />
+            <Users size={16} strokeWidth={1.8} />
             <span>인력 관리</span>
           </NavLink>
           <NavLink to="/admin/fairness" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="scale" size={16} />
+            <BarChart3 size={16} strokeWidth={1.8} />
             <span>통계 및 분석</span>
           </NavLink>
           <NavLink to="/admin/policy" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <TossIcon name="settings" size={16} />
+            <Settings size={16} strokeWidth={1.8} />
             <span>설정</span>
           </NavLink>
         </nav>
@@ -77,11 +87,11 @@ export const AdminLayout: React.FC = () => {
 
           <div className="topbar-right">
             <button className="icon-btn" aria-label="검색" title="빠른 검색 (Ctrl+K)">
-              <TossIcon name="search" size={16} />
+              <Search size={16} strokeWidth={1.9} />
             </button>
 
             <button className="icon-btn" aria-label="알림" title="알림">
-              <TossIcon name="bell" size={16} />
+              <Bell size={16} strokeWidth={1.9} />
               <span className="bell-dot" />
             </button>
 
