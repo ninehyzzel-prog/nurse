@@ -332,6 +332,8 @@ def publish_schedule_version(
 def generate_schedule_candidates(
     period_id: str,
     time_limit_seconds: float = Query(10.0, description="솔버 풀이 시간 제한(초)"),
+    day_coverage: int = Query(2, description="주간 필요 인원"),
+    night_coverage: int = Query(1, description="야간 필요 인원"),
     db: Session = Depends(get_db),
 ):
     """
@@ -436,8 +438,8 @@ def generate_schedule_candidates(
         shift_template_ids=shift_template_ids,
         time_off_requests=time_off_inputs,
         pinned_assignments=pinned_inputs,
-        default_day_coverage=2,
-        default_night_coverage=1,
+        default_day_coverage=day_coverage,
+        default_night_coverage=night_coverage,
     )
 
     # 3가지 모드로 실행

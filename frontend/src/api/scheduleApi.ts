@@ -136,11 +136,16 @@ export interface ApiScheduleRun {
 
 export async function generateScheduleCandidates(
   periodId: string = "period-2026-11",
-  timeLimitSeconds: number = 5.0
+  timeLimitSeconds: number = 5.0,
+  dayCoverage: number = 2,
+  nightCoverage: number = 1
 ): Promise<ApiScheduleRun> {
-  const res = await fetch(`${API_BASE_URL}/schedule-periods/${periodId}/generate?time_limit_seconds=${timeLimitSeconds}`, {
-    method: "POST",
-  });
+  const res = await fetch(
+    `${API_BASE_URL}/schedule-periods/${periodId}/generate?time_limit_seconds=${timeLimitSeconds}&day_coverage=${dayCoverage}&night_coverage=${nightCoverage}`,
+    {
+      method: "POST",
+    }
+  );
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.detail?.message || "스케줄 자동 생성 실패");

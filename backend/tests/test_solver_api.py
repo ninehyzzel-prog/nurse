@@ -45,3 +45,14 @@ def test_generate_schedule_candidates():
     latest_data = latest_res.json()
     assert latest_data["id"] == data["id"]
     assert len(latest_data["candidates"]) == 3
+
+
+def test_generate_schedule_infeasible_scenario_api():
+    """요구 인원이 병동 전체 가용 인원을 초과할 때 INFEASIBLE 진단 API 테스트"""
+    res = client.post("/api/schedule-periods/period-2026-11/generate?time_limit_seconds=3.0&day_coverage=20&night_coverage=10")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "INFEASIBLE"
+    assert data["diagnostics"] is not None
+    assert "INSUFFICIENT" in data["diagnostics"]["code"] or "INFEASIBLE" in data["diagnostics"]["code"]
+
