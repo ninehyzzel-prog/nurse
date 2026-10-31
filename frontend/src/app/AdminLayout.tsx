@@ -1,8 +1,9 @@
 import React from 'react';
-import { Outlet, NavLink, Link } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 import { 
-  CalendarRange, 
-  FileEdit,
+  LayoutDashboard,
+  CalendarDays, 
+  ClipboardList,
   Wand2, 
   Users, 
   BarChart3, 
@@ -10,20 +11,18 @@ import {
   Search,
   Bell,
   ChevronDown,
-  Smartphone
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
-
   return (
     <div className="mothercare-shell">
       {/* Sidebar */}
       <aside className="mc-sidebar">
         <div className="sidebar-brand">
           <div className="tulip-logo">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#F43F5E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 4c-2 2-3 5-3 8 0 3.3 2.7 6 6 6s6-2.7 6-6c0-3-1-6-3-8l-3 4-3-4z" fill="#FDA4AF" fillOpacity="0.4" />
-              <path d="M12 18v4" />
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#F43F5E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3c-2.5 2.5-4 6-4 9.5 0 4.1 3.4 7.5 7.5 7.5s7.5-3.4 7.5-7.5c0-3.5-1.5-7-4-9.5l-3.5 4.5L12 3z" fill="#FDA4AF" fillOpacity="0.5" />
+              <path d="M12 20v2" />
               <path d="M9 22h6" />
             </svg>
           </div>
@@ -34,29 +33,32 @@ export const AdminLayout: React.FC = () => {
         </div>
 
         <nav className="mc-nav">
+          <NavLink to="/admin/dashboard" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
+            <LayoutDashboard size={18} strokeWidth={1.9} />
+            <span>대시보드</span>
+          </NavLink>
           <NavLink to="/admin/roster/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <CalendarRange size={17} />
+            <CalendarDays size={18} strokeWidth={1.9} />
             <span>근무표</span>
           </NavLink>
           <NavLink to="/admin/requests/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <FileEdit size={17} />
+            <ClipboardList size={18} strokeWidth={1.9} />
             <span>근무 신청</span>
-            <span className="nav-badge">1</span>
           </NavLink>
           <NavLink to="/admin/auto-schedule/2026-11" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <Wand2 size={17} />
+            <Wand2 size={18} strokeWidth={1.9} />
             <span>근무 편성</span>
           </NavLink>
           <NavLink to="/admin/staff" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <Users size={17} />
+            <Users size={18} strokeWidth={1.9} />
             <span>인력 관리</span>
           </NavLink>
           <NavLink to="/admin/fairness" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <BarChart3 size={17} />
+            <BarChart3 size={18} strokeWidth={1.9} />
             <span>통계 및 분석</span>
           </NavLink>
           <NavLink to="/admin/policy" className={({ isActive }) => `nav-btn ${isActive ? 'active' : ''}`}>
-            <Settings size={17} />
+            <Settings size={18} strokeWidth={1.9} />
             <span>설정</span>
           </NavLink>
         </nav>
@@ -64,16 +66,7 @@ export const AdminLayout: React.FC = () => {
         {/* Sidebar Footer Profile */}
         <div className="sidebar-profile">
           <div className="avatar-img-box">
-            <img
-              src="https://images.unsplash.com/photo-1594824813583-0974e64f899e?w=120&auto=format&fit=crop&q=80"
-              alt="이은솔 간호사"
-              className="avatar-img"
-              onError={(e) => {
-                // 대체 아바타
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
-            <div className="avatar-fallback">이</div>
+            <div className="avatar-profile-pill">이</div>
           </div>
           <div className="profile-info">
             <span className="nurse-name">이은솔 간호사</span>
@@ -86,33 +79,21 @@ export const AdminLayout: React.FC = () => {
       <div className="mc-body">
         {/* Top Header */}
         <header className="mc-topbar">
-          <div className="topbar-search">
-            <Search size={15} className="search-icon" />
-            <input
-              type="text"
-              placeholder="간호사 검색, 근무 일정 검색..."
-              className="search-input"
-            />
-          </div>
+          <div className="topbar-left" />
 
           <div className="topbar-right">
-            <Link to="/me/schedule" className="mobile-toggle-btn" title="간호사 모바일 화면 보기">
-              <Smartphone size={15} />
-              <span>모바일 앱 뷰</span>
-            </Link>
+            <button className="icon-btn" aria-label="검색">
+              <Search size={18} strokeWidth={2} />
+            </button>
 
             <button className="icon-btn" aria-label="알림">
-              <Bell size={18} />
+              <Bell size={18} strokeWidth={2} />
               <span className="bell-dot" />
             </button>
 
             <div className="user-dropdown">
               <div className="user-mini-avatar">
-                <img
-                  src="https://images.unsplash.com/photo-1594824813583-0974e64f899e?w=80&auto=format&fit=crop&q=80"
-                  alt="이은솔"
-                  className="mini-img"
-                />
+                <div className="avatar-profile-pill mini">이</div>
               </div>
               <span className="user-label">이은솔</span>
               <ChevronDown size={14} className="chevron" />
@@ -132,58 +113,54 @@ export const AdminLayout: React.FC = () => {
           height: 100vh;
           width: 100vw;
           overflow: hidden;
-          background-color: var(--color-bg-app);
-          font-family: var(--font-family-sans);
+          background-color: #F8F9FA;
+          font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         /* Sidebar */
         .mc-sidebar {
-          width: 210px;
-          min-width: 210px;
-          background-color: var(--color-bg-surface);
-          border-right: 1px solid var(--color-border);
+          width: 190px;
+          min-width: 190px;
+          background-color: #FFFFFF;
+          border-right: 1px solid #F1F3F5;
           display: flex;
           flex-direction: column;
           user-select: none;
+          padding: 8px 12px;
         }
 
         .sidebar-brand {
-          height: 60px;
-          padding: 0 var(--space-4);
+          height: 56px;
           display: flex;
           align-items: center;
           gap: 10px;
+          padding: 0 8px;
+          margin-bottom: 8px;
         }
         .tulip-logo {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 32px;
-          background-color: #FFF1F2;
-          border-radius: var(--radius-md);
         }
         .brand-text {
           display: flex;
           flex-direction: column;
         }
         .brand-name {
-          font-size: 15px;
-          font-weight: 800;
-          color: var(--color-text-primary);
-          line-height: 1.2;
+          font-size: 16px;
+          font-weight: 700;
+          color: #0F172A;
           margin: 0;
-          letter-spacing: -0.02em;
+          line-height: 1.2;
         }
         .brand-ward {
-          font-size: 11px;
-          color: var(--color-text-muted);
-          line-height: 1;
+          font-size: 10px;
+          color: #64748B;
+          font-weight: 500;
+          line-height: 1.2;
         }
 
-        /* Navigation */
         .mc-nav {
-          padding: var(--space-2) var(--space-3);
           display: flex;
           flex-direction: column;
           gap: 4px;
@@ -192,79 +169,72 @@ export const AdminLayout: React.FC = () => {
         .nav-btn {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           height: 38px;
           padding: 0 12px;
-          border-radius: var(--radius-sm);
-          color: var(--color-text-secondary);
+          border-radius: 10px;
+          color: #64748B;
+          text-decoration: none;
           font-size: 13px;
-          font-weight: 600;
-          transition: background-color 0.12s, color 0.12s;
+          font-weight: 500;
+          transition: all 0.15s;
         }
         .nav-btn:hover {
-          background-color: #FFF5F7;
-          color: var(--color-primary);
+          background-color: #F8FAFC;
+          color: #0F172A;
         }
         .nav-btn.active {
           background-color: #FFF1F2;
-          color: var(--color-primary);
+          color: #F43F5E;
           font-weight: 700;
-        }
-        .nav-badge {
-          margin-left: auto;
-          background-color: var(--color-primary);
-          color: #FFFFFF;
-          font-size: 10px;
-          font-weight: 700;
-          padding: 1px 6px;
-          border-radius: var(--radius-full);
         }
 
-        /* Profile at bottom of sidebar */
         .sidebar-profile {
-          padding: var(--space-3) var(--space-4);
-          border-top: 1px solid var(--color-border);
           display: flex;
           align-items: center;
           gap: 10px;
+          padding: 10px 8px;
+          margin-top: auto;
+          border-top: 1px solid #F1F5F9;
         }
         .avatar-img-box {
-          width: 36px;
-          height: 36px;
-          border-radius: var(--radius-full);
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
           overflow: hidden;
-          background-color: #FECDD3;
+          background-color: #FFE4E6;
           flex-shrink: 0;
-          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .avatar-img {
+        .avatar-profile-pill {
           width: 100%;
           height: 100%;
-          object-fit: cover;
-        }
-        .avatar-fallback {
-          position: absolute;
-          inset: 0;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 13px;
           font-weight: 700;
-          color: #BE123C;
+          color: #E11D48;
+          background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%);
+          user-select: none;
+        }
+        .avatar-profile-pill.mini {
+          font-size: 11px;
         }
         .profile-info {
           display: flex;
           flex-direction: column;
         }
         .nurse-name {
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
-          color: var(--color-text-primary);
-          line-height: 1.2;
+          color: #0F172A;
         }
         .nurse-sub {
-          font-size: 11px;
-          color: var(--color-text-muted);
+          font-size: 10px;
+          color: #94A3B8;
         }
 
         /* Body & Topbar */
@@ -272,105 +242,61 @@ export const AdminLayout: React.FC = () => {
           flex: 1;
           display: flex;
           flex-direction: column;
-          min-width: 0;
+          height: 100vh;
           overflow: hidden;
+          background-color: #F8F9FA;
         }
         .mc-topbar {
-          height: 54px;
-          background-color: var(--color-bg-surface);
-          border-bottom: 1px solid var(--color-border);
-          padding: 0 var(--space-5);
+          height: 42px;
+          padding: 0 18px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          flex-shrink: 0;
+          background-color: #F8F9FA;
         }
-
-        .topbar-search {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background-color: #F8FAFC;
-          border: 1px solid #E2E8F0;
-          padding: 0 12px;
-          border-radius: var(--radius-full);
-          height: 32px;
-          width: 260px;
-        }
-        .search-icon {
-          color: var(--color-text-muted);
-        }
-        .search-input {
-          border: none;
-          background: none;
-          font-size: 12px;
-          outline: none;
-          width: 100%;
-          color: var(--color-text-primary);
-        }
-
         .topbar-right {
           display: flex;
           align-items: center;
           gap: 16px;
         }
-        .mobile-toggle-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          height: 28px;
-          padding: 0 10px;
-          background-color: #FFF1F2;
-          border: 1px solid #FECDD3;
-          border-radius: var(--radius-full);
-          color: var(--color-primary);
-          font-size: 11px;
-          font-weight: 700;
-          transition: background-color 0.12s;
-        }
-        .mobile-toggle-btn:hover {
-          background-color: #FFE4E6;
-        }
         .icon-btn {
-          position: relative;
-          color: var(--color-text-secondary);
+          background: none;
+          border: none;
+          color: #64748B;
+          cursor: pointer;
+          padding: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 32px;
-          border-radius: var(--radius-full);
+          position: relative;
+          transition: color 0.15s;
         }
         .icon-btn:hover {
-          background-color: #F1F5F9;
+          color: #0F172A;
         }
         .bell-dot {
           position: absolute;
-          top: 5px;
+          top: 6px;
           right: 6px;
           width: 6px;
           height: 6px;
-          background-color: var(--color-primary);
-          border-radius: var(--radius-full);
+          border-radius: 50%;
+          background-color: #F43F5E;
         }
-
         .user-dropdown {
           display: flex;
           align-items: center;
           gap: 8px;
           cursor: pointer;
-          padding: 3px 6px;
-          border-radius: var(--radius-full);
-        }
-        .user-dropdown:hover {
-          background-color: #F8FAFC;
+          padding: 4px 6px;
+          border-radius: 8px;
         }
         .user-mini-avatar {
-          width: 26px;
-          height: 26px;
-          border-radius: var(--radius-full);
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
           overflow: hidden;
-          background-color: #FECDD3;
+          background-color: #FFE4E6;
         }
         .mini-img {
           width: 100%;
@@ -378,18 +304,19 @@ export const AdminLayout: React.FC = () => {
           object-fit: cover;
         }
         .user-label {
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--color-text-primary);
+          font-size: 13px;
+          font-weight: 600;
+          color: #1E293B;
         }
         .chevron {
-          color: var(--color-text-muted);
+          color: #94A3B8;
         }
 
         .mc-content {
           flex: 1;
-          padding: var(--space-4);
           overflow-y: auto;
+          overflow-x: hidden;
+          padding: 0 16px 10px 16px;
         }
       `}</style>
     </div>

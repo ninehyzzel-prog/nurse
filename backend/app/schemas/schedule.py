@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import datetime
 from pydantic import BaseModel, ConfigDict
 
@@ -43,3 +43,27 @@ class SchedulePeriodOut(BaseModel):
     end_date: datetime.date
     status: str
     current_version: Optional[ScheduleVersionOut] = None
+
+
+class CandidateOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    rank: int
+    name: str  # 균형형 (추천), 희망형, 피로 최소형
+    total_score: float
+    fairness_score: float
+    description: str
+    explanation_points: List[str]
+    fairness_metrics: Dict[str, Any]
+    assignment_count: int
+
+
+class ScheduleRunOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    schedule_period_id: str
+    solver_version: str
+    status: str  # OPTIMAL, FEASIBLE, INFEASIBLE
+    created_at: datetime.datetime
+    candidates: List[CandidateOut] = []
+    diagnostics: Optional[Dict[str, Any]] = None

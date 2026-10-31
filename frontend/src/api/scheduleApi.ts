@@ -112,6 +112,71 @@ export async function updateAssignment(
   return res.json();
 }
 
+export interface ApiCandidate {
+  id: string;
+  rank: number;
+  name: string;
+  total_score: number;
+  fairness_score: number;
+  description: string;
+  explanation_points: string[];
+  fairness_metrics: Record<string, unknown>;
+  assignment_count: number;
+}
+
+export interface ApiScheduleRun {
+  id: string;
+  schedule_period_id: string;
+  solver_version: string;
+  status: string;
+  created_at: string;
+  candidates: ApiCandidate[];
+  diagnostics?: Record<string, unknown>;
+}
+
+export async function generateScheduleCandidates(
+  periodId: string = "period-2026-11",
+  timeLimitSeconds: number = 5.0
+): Promise<ApiScheduleRun> {
+  const res = await fetch(`${API_BASE_URL}/schedule-periods/${periodId}/generate?time_limit_seconds=${timeLimitSeconds}`, {
+    method: "POST",
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail?.message || "스케줄 자동 생성 실패");
+  }
+  return res.json();
+}
+
+export async function applyScheduleCandidate(
+  periodId: string = "period-2026-11",
+  candidateId: string
+): Promise<{
+  message: string;
+  version_id: string;
+  applied_count: number;
+  validation_report: ValidationReport;
+}> {
+  const res = await fetch(`${API_BASE_URL}/schedule-periods/${periodId}/apply-candidate/${candidateId}`, {
+    method: "POST",
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail?.message || "후보안 적용 실패");
+  }
+  return res.json();
+}
+
+export async function fetchLatestScheduleRun(
+  periodId: string = "period-2026-11"
+): Promise<ApiScheduleRun | null> {
+  const res = await fetch(`${API_BASE_URL}/schedule-periods/${periodId}/runs/latest`);
+  if (!res.ok) {
+    return null;
+  }
+  return res.json();
+}
+
 export async function publishSchedule(
   versionId: string,
   force: boolean = false,
@@ -135,3 +200,5 @@ export async function publishSchedule(
 
   return res.json();
 }
+
+

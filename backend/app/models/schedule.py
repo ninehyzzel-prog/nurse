@@ -114,3 +114,4 @@ class RunCandidateAssignment(Base):
     end_at_utc = Column(DateTime, nullable=False)
 
     candidate = relationship("RunCandidate", back_populates="assignments")
+    template_version = relationship("ShiftTemplateVersion")

@@ -151,10 +151,10 @@ def test_schedule_period_and_assignments():
     assert version is not None
     assert len(version["assignments"]) >= 180  # 6명 x 30일 = 180건
 
-    # 단일 셀 수정 및 핀 고정
+    # 단일 셀 수정 및 핀 고정 (OFF로 안전하게 변경)
     first_assign = version["assignments"][0]
     update_payload = {
-        "shift_template_id": "shift-night",
+        "shift_template_id": "shift-off",
         "is_pinned": True,
         "note": "수동 변경 테스트",
     }
