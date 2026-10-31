@@ -6,6 +6,7 @@ interface ShiftCellProps {
   template?: ShiftTemplate;
   isPinned?: boolean;
   isCompact?: boolean;
+  showTime?: boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -14,20 +15,41 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
   template,
   isPinned = false,
   isCompact = false,
+  showTime = false,
   onClick,
   className = '',
 }) => {
   const isOff = !template || template.code === 'OFF';
-  const colorToken = isOff ? 'shift-off' : template.colorToken;
-  const codeChar = isOff
-    ? 'OFF'
-    : template.code === 'DAY'
-    ? 'D'
-    : template.code === 'NIGHT'
-    ? 'N'
-    : template.code === 'EVENING'
-    ? 'E'
-    : template.code;
+  const code = isOff ? 'OFF' : template.code;
+
+  // Linear / Shadcn 정제된 디자인 토큰
+  const badgeStyle = isOff
+    ? {
+        bg: '#F8FAFC',
+        text: '#475569',
+        border: '#E2E8F0',
+        label: '오프',
+      }
+    : code === 'DAY'
+    ? {
+        bg: '#FFF1F2',
+        text: '#E11D48',
+        border: '#FFE4E6',
+        label: '데이',
+      }
+    : code === 'NIGHT'
+    ? {
+        bg: '#F0FDF4',
+        text: '#166534',
+        border: '#DCFCE7',
+        label: '나이트',
+      }
+    : {
+        bg: '#FFF7ED',
+        text: '#C2410C',
+        border: '#FFEDD5',
+        label: '이브닝',
+      };
 
   return (
     <div
@@ -40,55 +62,76 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
           onClick?.();
         }
       }}
-      className={`shift-capsule ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
+      className={`linear-shift-badge ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
       style={{
-        backgroundColor: `var(--${colorToken}-bg)`,
-        color: `var(--${colorToken}-text)`,
-        borderColor: `var(--${colorToken}-border)`,
+        backgroundColor: badgeStyle.bg,
+        color: badgeStyle.text,
+        borderColor: badgeStyle.border,
       }}
       title={template ? `${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal})` : '오프 (OFF)'}
     >
-      <span className="code-text font-mono">{codeChar}</span>
+      <span className="badge-code font-mono">{code === 'OFF' ? 'OFF' : code.slice(0, 1)}</span>
+      {!isCompact && <span className="badge-name">{badgeStyle.label}</span>}
+      {showTime && template && (
+        <span className="badge-time font-mono">
+          {template.startsAtLocal.slice(0, 5)}
+        </span>
+      )}
       {isPinned && (
-        <span className="pin-badge" title="고정(Pin)">
-          <Pin size={8} strokeWidth={2.8} />
+        <span className="pin-indicator" title="고정(Pin)">
+          <Pin size={9} strokeWidth={2.4} />
         </span>
       )}
 
       <style>{`
-        .shift-capsule {
-          display: flex;
+        .linear-shift-badge {
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
-          width: 86%;
-          height: 28px;
-          border-radius: 9999px;
+          gap: 5px;
+          padding: 4px 8px;
+          border-radius: 6px;
           border: 1px solid transparent;
-          font-weight: 800;
-          font-size: 13px;
-          line-height: 1;
-          letter-spacing: 0.02em;
-          transition: transform 0.12s, box-shadow 0.12s;
+          font-size: 11px;
+          font-weight: 600;
+          line-height: 1.2;
+          cursor: pointer;
+          transition: background-color 0.12s, border-color 0.12s, transform 0.08s;
           user-select: none;
+          max-width: 100%;
         }
-        .shift-capsule:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        .linear-shift-badge:hover {
+          filter: brightness(0.97);
+          transform: translateY(-0.5px);
         }
-        .shift-capsule.compact {
-          width: 90%;
-          height: 18px;
-          font-size: 9px;
-          font-weight: 800;
+        .linear-shift-badge.compact {
+          padding: 2px 6px;
+          gap: 3px;
+          font-size: 10px;
+          border-radius: 4px;
         }
-        .code-text {
-          display: inline-block;
-          line-height: 1;
+        .badge-code {
+          font-weight: 700;
+          font-size: 11px;
+          letter-spacing: -0.01em;
         }
-        .pin-badge {
+        .compact .badge-code {
+          font-size: 10px;
+        }
+        .badge-name {
+          font-size: 11px;
+          font-weight: 500;
+          opacity: 0.9;
+        }
+        .badge-time {
+          font-size: 10px;
+          opacity: 0.65;
           margin-left: 2px;
+        }
+        .pin-indicator {
+          margin-left: auto;
           display: flex;
           align-items: center;
+          opacity: 0.7;
         }
       `}</style>
     </div>
