@@ -220,12 +220,12 @@ export const PolicyAdminPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .v-status {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #047857;
           background-color: #ECFDF5;
-          padding: 1px 4px;
-          border-radius: 2px;
+          padding: 1px 5px;
+          border-radius: 3px;
         }
         .v-desc {
           font-size: 12px;
@@ -236,12 +236,12 @@ export const PolicyAdminPage: React.FC = () => {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          height: 28px;
+          height: 30px;
           padding: 0 10px;
           background-color: var(--color-primary);
           color: #fff;
           border-radius: var(--radius-sm);
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
         }
 
@@ -269,19 +269,19 @@ export const PolicyAdminPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .toolbar-sub {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
         .btn-add-shift {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          height: 26px;
-          padding: 0 8px;
+          height: 28px;
+          padding: 0 10px;
           background-color: var(--color-bg-surface);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 500;
           color: var(--color-text-secondary);
         }
@@ -308,7 +308,7 @@ export const PolicyAdminPage: React.FC = () => {
           padding: 6px 12px;
           text-align: left;
           font-weight: 600;
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-secondary);
           border-bottom: 1px solid var(--color-border);
         }
@@ -325,30 +325,30 @@ export const PolicyAdminPage: React.FC = () => {
         }
         .font-mono {
           font-feature-settings: "tnum";
-          font-size: 11px;
+          font-size: 12px;
         }
         .text-muted {
           color: var(--color-text-muted);
-          font-size: 11px;
+          font-size: 12px;
         }
         .badge-offset {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #6D28D9;
           background-color: #F5F3FF;
-          padding: 1px 5px;
-          border-radius: 2px;
+          padding: 1px 6px;
+          border-radius: 3px;
         }
         .badge-ok {
-          font-size: 10px;
+          font-size: 12px;
           color: #15803D;
           font-weight: 600;
         }
         .tag-strength {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 700;
-          padding: 1px 5px;
-          border-radius: 2px;
+          padding: 1px 6px;
+          border-radius: 3px;
         }
         .tag-strength.hard {
           background-color: #FEF2F2;
@@ -359,12 +359,12 @@ export const PolicyAdminPage: React.FC = () => {
           color: #B45309;
         }
         .badge-legal {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #B91C1C;
           background-color: #FEE2E2;
-          padding: 1px 5px;
-          border-radius: 2px;
+          padding: 1px 6px;
+          border-radius: 3px;
         }
       `}</style>
     </div>

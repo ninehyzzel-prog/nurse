@@ -161,7 +161,7 @@ export const AdminLayout: React.FC = () => {
           letter-spacing: -0.01em;
         }
         .brand-ward {
-          font-size: 10px;
+          font-size: 12px;
           color: #64748B;
           font-weight: 500;
           line-height: 1.2;
@@ -229,7 +229,7 @@ export const AdminLayout: React.FC = () => {
           background: #FFE4E6;
         }
         .avatar-profile-pill.mini {
-          font-size: 11px;
+          font-size: 12px;
         }
         .profile-info {
           display: flex;
@@ -246,7 +246,7 @@ export const AdminLayout: React.FC = () => {
           text-overflow: ellipsis;
         }
         .nurse-sub {
-          font-size: 10px;
+          font-size: 12px;
           color: #64748B;
           line-height: 1.2;
         }

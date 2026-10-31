@@ -185,9 +185,9 @@ export const ConflictResolverPage: React.FC = () => {
         .conflict-badge {
           display: inline-flex;
           align-items: center;
-          padding: 1px 7px;
+          padding: 2px 8px;
           border-radius: var(--radius-sm);
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           background-color: #FEF3C7;
           border: 1px solid #FDE68A;
@@ -227,7 +227,7 @@ export const ConflictResolverPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .date-tag, .rule-ref {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
 
@@ -281,7 +281,7 @@ export const ConflictResolverPage: React.FC = () => {
           color: #15803D;
         }
         .rec-body {
-          font-size: 11px;
+          font-size: 12px;
           line-height: 1.4;
           color: #166534;
           margin: 0;
@@ -324,7 +324,7 @@ export const ConflictResolverPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .app-role {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
         .score-badge {
@@ -343,12 +343,12 @@ export const ConflictResolverPage: React.FC = () => {
           font-feature-settings: "tnum";
         }
         .score-unit {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
 
         .recommended-ribbon {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #15803D;
           background-color: #DCFCE7;
@@ -368,7 +368,7 @@ export const ConflictResolverPage: React.FC = () => {
         .score-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 11px;
+          font-size: 12px;
         }
         .score-table th {
           background-color: var(--color-bg-subtle);

@@ -133,10 +133,10 @@ export const RequestListPage: React.FC = () => {
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         .count-badge {
-          font-size: 10px;
+          font-size: 12px;
           background-color: #0F172A;
           color: #FFFFFF;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 4px;
         }
 
@@ -151,13 +151,13 @@ export const RequestListPage: React.FC = () => {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           background-color: #FFFFFF;
           border: 1px solid #CBD5E1;
-          padding: 3px 8px;
-          border-radius: 5px;
+          padding: 4px 9px;
+          border-radius: 6px;
           text-decoration: none;
         }
         .btn-add-fast:hover {
@@ -199,11 +199,11 @@ export const RequestListPage: React.FC = () => {
           color: #0F172A;
         }
         .star-tag {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #854D0E;
           background-color: #FEF9C3;
-          padding: 1px 5px;
+          padding: 2px 6px;
           border-radius: 4px;
           display: inline-flex;
           align-items: center;
@@ -219,7 +219,7 @@ export const RequestListPage: React.FC = () => {
           border-radius: 6px;
         }
         .date-label {
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
         }
         .date-values {
@@ -229,7 +229,7 @@ export const RequestListPage: React.FC = () => {
         }
 
         .reason-bubble {
-          font-size: 11px;
+          font-size: 12px;
           color: #475569;
           font-style: italic;
           padding-left: 2px;
@@ -245,12 +245,12 @@ export const RequestListPage: React.FC = () => {
         .sd-header {
           display: flex;
           justify-content: space-between;
-          font-size: 11px;
+          font-size: 12px;
           color: #475569;
         }
         .sd-calc {
-          font-size: 10px;
-          color: #94A3B8;
+          font-size: 12px;
+          color: #64748B;
         }
 
         .row-bottom {
@@ -261,11 +261,11 @@ export const RequestListPage: React.FC = () => {
           padding-top: 6px;
         }
         .submit-time {
-          font-size: 10px;
+          font-size: 12px;
           color: #94A3B8;
         }
         .action-link {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           display: flex;

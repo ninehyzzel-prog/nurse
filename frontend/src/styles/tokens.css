@@ -106,11 +106,12 @@
   --font-family-sans: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
-  --text-micro: 10px;
-  --text-xs: 11px;
-  --text-sm: 12px;
-  --text-base: 13px;
-  --text-md: 14px;
+  /* Typography Scales (Minimum 12px rule enforced across the system) */
+  --text-micro: 12px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
   --text-lg: 16px;
   --text-xl: 18px;
   --text-2xl: 22px;

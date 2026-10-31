@@ -737,7 +737,7 @@ export const RosterEditorPage: React.FC = () => {
           border: 1px solid #E2E8F0;
           border-radius: 5px;
           padding: 3px 8px;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 500;
           color: #475569;
           cursor: pointer;
@@ -804,7 +804,7 @@ export const RosterEditorPage: React.FC = () => {
           gap: 6px;
         }
         .count-tag {
-          font-size: 11px;
+          font-size: 12px;
           padding: 2px 7px;
           border-radius: 4px;
           font-weight: 500;
@@ -827,7 +827,7 @@ export const RosterEditorPage: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 11px;
+          font-size: 12px;
           color: #059669;
           background-color: #ECFDF5;
           padding: 3px 9px;
@@ -845,7 +845,7 @@ export const RosterEditorPage: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 5px;
-          font-size: 11px;
+          font-size: 12px;
           padding: 3px 9px;
           border-radius: 6px;
           font-weight: 600;
@@ -960,7 +960,7 @@ export const RosterEditorPage: React.FC = () => {
         }
         .dow-cell {
           padding: 8px 12px;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #64748B;
           text-align: left;
@@ -1016,21 +1016,21 @@ export const RosterEditorPage: React.FC = () => {
         }
 
         .subtle-holiday {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #E11D48;
           background-color: #FFF1F2;
-          padding: 1px 4px;
+          padding: 1px 5px;
           border-radius: 3px;
         }
         .cell-note-dot {
-          font-size: 9px;
+          font-size: 12px;
           margin-left: auto;
         }
         .cell-note-dot.pink { color: #E11D48; }
         .cell-note-dot.blue { color: #2563EB; }
         .cell-note-icon {
-          font-size: 10px;
+          font-size: 12px;
           margin-left: auto;
           color: #059669;
         }
@@ -1046,7 +1046,7 @@ export const RosterEditorPage: React.FC = () => {
           justify-content: flex-end;
         }
         .staff-indicator {
-          font-size: 10px;
+          font-size: 12px;
           color: #94A3B8;
         }
 
@@ -1145,7 +1145,7 @@ export const RosterEditorPage: React.FC = () => {
           gap: 6px;
         }
         .cand-badge.rec {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 700;
           color: #E11D48;
           background-color: #FFE4E6;
@@ -1163,7 +1163,7 @@ export const RosterEditorPage: React.FC = () => {
           color: #0F172A;
         }
         .cand-score small {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 500;
         }
 
@@ -1171,7 +1171,7 @@ export const RosterEditorPage: React.FC = () => {
           list-style: none;
           padding: 0;
           margin: 0;
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
           display: flex;
           flex-direction: column;
@@ -1215,7 +1215,7 @@ export const RosterEditorPage: React.FC = () => {
           border: 1px solid #E2E8F0;
           border-radius: 6px;
           padding: 10px 12px;
-          font-size: 11px;
+          font-size: 12px;
           color: #475569;
           line-height: 1.4;
           display: flex;
@@ -1278,7 +1278,7 @@ export const RosterEditorPage: React.FC = () => {
           color: #0F172A;
         }
         .rank-sub {
-          font-size: 10px;
+          font-size: 12px;
           color: #64748B;
         }
         .rank-right {
@@ -1292,9 +1292,9 @@ export const RosterEditorPage: React.FC = () => {
           color: #0F172A;
         }
         .status-pill {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
-          padding: 2px 6px;
+          padding: 2px 7px;
           border-radius: 4px;
         }
         .status-pill.green { background-color: #DCFCE7; color: #166534; }
@@ -1309,14 +1309,14 @@ export const RosterEditorPage: React.FC = () => {
           padding: 10px 12px;
         }
         .suggest-title {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           display: block;
           margin-bottom: 3px;
         }
         .suggest-desc {
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
           margin: 0 0 8px 0;
           line-height: 1.3;
@@ -1328,7 +1328,7 @@ export const RosterEditorPage: React.FC = () => {
           color: #0F172A;
           border-radius: 5px;
           padding: 6px 0;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           cursor: pointer;
         }
@@ -1344,7 +1344,7 @@ export const RosterEditorPage: React.FC = () => {
           margin-bottom: 12px;
         }
         .input-label {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #475569;
         }
@@ -1357,9 +1357,9 @@ export const RosterEditorPage: React.FC = () => {
         .date-chip {
           background-color: #F1F5F9;
           color: #0F172A;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 500;
-          padding: 3px 6px;
+          padding: 3px 7px;
           border-radius: 4px;
           display: inline-flex;
           align-items: center;
@@ -1377,8 +1377,8 @@ export const RosterEditorPage: React.FC = () => {
           border: 1px dashed #CBD5E1;
           background: none;
           border-radius: 4px;
-          font-size: 10px;
-          padding: 2px 6px;
+          font-size: 12px;
+          padding: 2px 7px;
           color: #64748B;
           cursor: pointer;
           display: inline-flex;
@@ -1443,7 +1443,7 @@ export const RosterEditorPage: React.FC = () => {
           margin-left: 3px;
         }
         .st-count {
-          font-size: 10px;
+          font-size: 12px;
           color: #94A3B8;
         }
         .st-right {
@@ -1452,16 +1452,16 @@ export const RosterEditorPage: React.FC = () => {
           gap: 6px;
         }
         .st-tag {
-          font-size: 10px;
+          font-size: 12px;
           background-color: #F1F5F9;
           color: #475569;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 3px;
         }
         .st-status {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 3px;
         }
         .st-status.active { background-color: #DCFCE7; color: #166534; }

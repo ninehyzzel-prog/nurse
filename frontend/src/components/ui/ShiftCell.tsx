@@ -91,7 +91,7 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
           padding: 4px 8px;
           border-radius: 6px;
           border: 1px solid transparent;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           line-height: 1.2;
           cursor: pointer;
@@ -104,27 +104,27 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
           transform: translateY(-0.5px);
         }
         .linear-shift-badge.compact {
-          padding: 2px 6px;
+          padding: 2px 7px;
           gap: 3px;
-          font-size: 10px;
-          border-radius: 4px;
+          font-size: 12px;
+          border-radius: 5px;
         }
         .badge-code {
           font-weight: 700;
-          font-size: 11px;
+          font-size: 12px;
           letter-spacing: -0.01em;
         }
         .compact .badge-code {
-          font-size: 10px;
+          font-size: 12px;
         }
         .badge-name {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 500;
           opacity: 0.9;
         }
         .badge-time {
-          font-size: 10px;
-          opacity: 0.65;
+          font-size: 12px;
+          opacity: 0.7;
           margin-left: 2px;
         }
         .pin-indicator {

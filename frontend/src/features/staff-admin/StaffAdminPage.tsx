@@ -387,7 +387,7 @@ export const StaffAdminPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .info-desc {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
 
@@ -404,7 +404,7 @@ export const StaffAdminPage: React.FC = () => {
           padding: 7px 12px;
           text-align: left;
           font-weight: 600;
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-secondary);
           border-bottom: 1px solid var(--color-border);
         }
@@ -419,7 +419,7 @@ export const StaffAdminPage: React.FC = () => {
 
         .font-mono {
           font-feature-settings: "tnum";
-          font-size: 11px;
+          font-size: 12px;
         }
         .font-semibold {
           font-weight: 600;
@@ -428,14 +428,14 @@ export const StaffAdminPage: React.FC = () => {
           color: var(--color-text-muted);
         }
         .type-badge {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-secondary);
         }
         .night-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
-          padding: 1px 5px;
-          border-radius: 2px;
+          padding: 1px 6px;
+          border-radius: 3px;
         }
         .night-badge.ok {
           background-color: #ECFDF5;
@@ -452,16 +452,16 @@ export const StaffAdminPage: React.FC = () => {
           gap: 4px;
         }
         .skill-pill {
-          font-size: 10px;
-          padding: 1px 4px;
-          border-radius: 2px;
+          font-size: 12px;
+          padding: 1px 5px;
+          border-radius: 3px;
           font-weight: 600;
         }
         .skill-pill.charge_capable { background-color: #EEF2FF; color: #4338CA; }
         .skill-pill.delivery_room { background-color: #ECFDF5; color: #047857; }
         .skill-pill.new_grad { background-color: #FEF3C7; color: #B45309; }
         .active-dot {
-          font-size: 11px;
+          font-size: 12px;
           color: #15803D;
         }
 
@@ -510,7 +510,7 @@ export const StaffAdminPage: React.FC = () => {
           padding: 8px var(--space-4);
           background-color: #FAFAFA;
           border-bottom: 1px solid var(--color-border-subtle);
-          font-size: 11px;
+          font-size: 12px;
         }
         .step-node {
           color: var(--color-text-muted);
@@ -542,7 +542,7 @@ export const StaffAdminPage: React.FC = () => {
           color: var(--color-text-secondary);
         }
         .form-hint {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
           line-height: 1.4;
           margin: 0;
@@ -582,7 +582,7 @@ export const StaffAdminPage: React.FC = () => {
           font-size: 12px;
         }
         .option-card p {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
           margin: 0;
         }

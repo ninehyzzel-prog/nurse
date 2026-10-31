@@ -261,10 +261,10 @@ export const NewRequestPage: React.FC = () => {
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         .count-badge {
-          font-size: 10px;
+          font-size: 12px;
           background-color: #E2E8F0;
           color: #475569;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 4px;
         }
 
@@ -276,7 +276,7 @@ export const NewRequestPage: React.FC = () => {
           color: #1D4ED8;
           padding: 6px 12px;
           border-radius: 6px;
-          font-size: 11px;
+          font-size: 12px;
         }
 
         /* 폼 카드 공통 */
@@ -306,7 +306,7 @@ export const NewRequestPage: React.FC = () => {
           color: #0F172A;
         }
         .selected-tag {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #E11D48;
         }
@@ -321,7 +321,7 @@ export const NewRequestPage: React.FC = () => {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
           text-align: center;
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #94A3B8;
           padding-bottom: 2px;
@@ -379,9 +379,9 @@ export const NewRequestPage: React.FC = () => {
         .s-chip {
           background-color: #F1F5F9;
           color: #0F172A;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
-          padding: 2px 7px;
+          padding: 2px 8px;
           border-radius: 5px;
           display: inline-flex;
           align-items: center;
@@ -467,7 +467,7 @@ export const NewRequestPage: React.FC = () => {
           color: #0F172A;
         }
         .tile-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           padding: 1px 6px;
           border-radius: 4px;
@@ -476,7 +476,7 @@ export const NewRequestPage: React.FC = () => {
         .tile-badge.blue { background-color: #EFF6FF; color: #1D4ED8; }
         .tile-badge.green { background-color: #F0FDF4; color: #166534; }
         .tile-desc {
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
           margin: 0;
           line-height: 1.3;
@@ -512,7 +512,7 @@ export const NewRequestPage: React.FC = () => {
         }
         .star-icon { color: #EAB308; }
         .t-sub {
-          font-size: 10px;
+          font-size: 12px;
           color: #64748B;
           line-height: 1.3;
         }

@@ -186,7 +186,7 @@ export const MobileLayout: React.FC = () => {
           color: #0F172A;
         }
         .ward-pill {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #64748B;
           background-color: #F1F5F9;
@@ -223,11 +223,11 @@ export const MobileLayout: React.FC = () => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 3px;
+          gap: 2px;
           min-width: 50px;
           height: 48px;
           color: #94A3B8;
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 500;
           text-decoration: none;
           background: none;

@@ -1,0 +1,174 @@
+# MotherCare (마더케어) UI/UX Design System
+
+> **버전:** 1.0.0  
+> **기준 레퍼런스:** Linear × Notion Calendar × Apple Human Interface Guidelines  
+> **대상 플랫폼:** 반응형 웹 (PC 어드민 풀 브라우저 1200px+ & 모바일 웹/앱 375px~430px)  
+> **핵심 원칙:** 안티-클리셰(AI 티 제거), 단일 목적 화면화, 최소 폰트 12px 엄격 보장, 높은 시각적 밀도와 명확한 위계
+
+---
+
+## 1. 디자인 철학 및 방향성 (Design Philosophy)
+
+### 1.1 안티-AI 클리셰 원칙 (Anti-Cliché)
+1. **박스 안의 박스(Card Nesting) 배제:**
+   - 카드를 무의미하게 중첩하여 가두지 않고, Notion 및 Linear처럼 **자연스러운 여백(Whitespace)**과 **미세한 1px 보더 (`#F1F5F9`, `#E2E8F0`)**, 배경 명도 차이로 영역을 구획합니다.
+2. **단일 목적 화면화 (Single-Purpose Workspace):**
+   - PC 캘린더 화면에서 조잡한 장식용 스마트폰 목업 프레임이나 하단에 복잡하게 모여있던 4개 위젯(근무신청, 충돌안내, 인력관리 등)을 걷어내고, **근무표 본연의 가독성과 편집 편의성을 극대화한 Full-Width 캘린더**로 확장합니다.
+   - 복잡한 서브 작업(공정성 조율, 자동 편성 솔버, 충돌 해결)은 **우측 슬라이드 드로어(Inspector Panel)** 또는 독립 전용 페이지로 전환합니다.
+3. **절제된 데이터 시각화:**
+   - 불필요하고 왜곡을 유발하는 원색 도넛 게이지를 배제하고, Linear 스타일의 **단정한 진행 바(Bar gauge)**, **카운터 태그**, **정돈된 데이터 테이블**로 정보를 전달합니다.
+
+### 1.2 삼원 레퍼런스 결합
+- **Linear:** 정밀한 4px 그리드 리듬, 키보드 친화적 빠른 전환, 섬세한 1px 테두리, 절제된 슬레이트/뉴트럴 톤.
+- **Notion Calendar:** 캘린더 셀 내부의 자연스러운 시선 흐름, 근무 배지와 텍스트 간 명확한 정렬, 편안한 가독성.
+- **Apple HIG:** 모바일 하단 탭바(SafeArea 반영), 스무스한 바텀시트 모달, 직관적인 제스처 및 인체공학적 터치 타깃(최소 44px).
+
+---
+
+## 2. 타이포그래피 규칙 (Typography System)
+
+> **[CRITICAL SYSTEM RULE] 최소 폰트 크기 12px 엄격 준수**  
+> 모바일 환경 및 고밀도 데이터 화면에서도 웹 접근성(WCAG)과 교대근무 간호사의 시인성을 위해 **12px 미만(10px, 11px, 9px 등)의 마이크로 텍스트 사용을 시스템 전역에서 영구 금지**합니다.
+
+### 2.1 폰트 패밀리
+- **기본 Sans:** `Pretendard Variable`, `-apple-system`, `BlinkMacSystemFont`, `"Apple SD Gothic Neo"`, `sans-serif`
+- **숫자/코드 Mono:** `SFMono-Regular`, `"SF Mono"`, `ui-monospace`, `Menlo`, `Consolas`, `monospace`
+- **고정폭 숫자 (Tabular Figures):** 시간, 날짜, 통계 지표, 점수 계산 영역에는 `font-feature-settings: "tnum"`을 필수로 활성화하여 숫자 흔들림을 방지합니다.
+
+### 2.2 폰트 스케일 (Type Scale)
+
+| 토큰명 | 크기 | 용도 및 적용 컴포넌트 | 굵기 (Weight) |
+|---|---|---|---|
+| `--text-micro` | `12px` | 시스템 최소 크기 (태그, 타임스탬프, 보조 레이블) | 500 / 600 |
+| `--text-xs` | `12px` | 캘린더 셀 보조 텍스트, 상태 뱃지 텍스트 | 600 / 700 |
+| `--text-sm` | `13px` | 메타 바, 테이블 헤더, 목록 서브타이틀 | 500 / 600 |
+| `--text-base` | `14px` | 기본 본문, 드로어 폼 레이블, 리스트 본문 | 400 / 500 |
+| `--text-md` | `15px` | 섹션 소제목, 모바일 카드 헤더 | 600 / 700 |
+| `--text-lg` | `16px` | 페이지 서브헤더, 모바일 탭 타이틀 | 700 |
+| `--text-xl` | `18px` | 대시보드 메인 타이틀, 모달 타이틀 | 700 |
+| `--text-2xl` | `22px` | 메인 연월 헤더 (`2026년 10월`) | 800 |
+
+---
+
+## 3. 컬러 팔레트 & 시맨틱 토큰 (Color Tokens)
+
+### 3.1 브랜드 & 서피스 (Surfaces & Neutrals)
+- **Primary Rose:** `#F43F5E` (마더케어 산부인과 아이덴티티, 활성 탭 및 핵심 CTA)
+- **Primary Light:** `#FFF1F2` (활성 배경, 소프트 하이라이트)
+- **Background Root:** `#F8FAFC` (슬레이트 50 - 눈의 피로도를 낮추는 연무채색)
+- **Background Surface:** `#FFFFFF` (순백색 메인 캔버스)
+- **Background Subtle:** `#F1F5F9` (슬레이트 100 - 테이블 헤더, 칩 배경)
+- **Border Subtle:** `#F1F5F9` (미세한 그리드 구분선 1px)
+- **Border Default:** `#E2E8F0` (카드, 드로어, 패널 경계선 1px)
+- **Border Strong:** `#CBD5E1` (포커스 또는 호버 테두리 1px)
+- **Text Primary:** `#0F172A` (슬레이트 900 - 본문 및 주요 헤딩)
+- **Text Secondary:** `#475569` (슬레이트 600 - 보조 본문 및 메타 레이블)
+- **Text Muted:** `#94A3B8` (슬레이트 400 - 비활성, 플레이스홀더)
+
+### 3.2 교대근무 뱃지 토큰 (Shift Tokens)
+산부인과 병동 3교대 간호 환경에서 즉각적인 인지가 가능한 고대비 파스텔 시맨틱 뱃지 시스템:
+
+| 근무 코드 | 명칭 | 배경색 | 테두리색 | 글자색 | 의미 및 운영 기준 |
+|---|---|---|---|---|---|
+| **D (Day)** | 데이 | `#FFF1F2` | `#FECDD3` | `#E11D48` | 주간 정규 근무 (07:00 ~ 15:30) |
+| **E (Eve)** | 이브닝 | `#FFF7ED` | `#FED7AA` | `#EA580C` | 오후 교대 근무 (15:00 ~ 23:00) |
+| **N (Night)** | 나이트 | `#ECFDF5` | `#A7F3D0` | `#059669` | 야간 당직 근무 (22:30 ~ 07:30) |
+| **OFF** | 오프 | `#F0F9FF` | `#BAE6FD` | `#0284C7` | 정규 휴무 / 희망 휴무 |
+| **VAC (휴가)** | 연차휴가 | `#FAF5FF` | `#E9D5FF` | `#7E22CE` | 법정 연차 및 모성보호 휴가 |
+| **REQ (대기)** | 신청대기 | `#F8FAFC` | `#E2E8F0` | `#64748B` | 수간호사 검토 대기 슬롯 |
+
+### 3.3 상태 뱃지 토큰 (Status Pill Tokens)
+- **승인됨 / 확정됨 (`success`):** Bg `#DCFCE7`, Border `#BBF7D0`, Text `#15803D`
+- **대기중 / 작성중 (`warning`):** Bg `#FEF3C7`, Border `#FDE68A`, Text `#B45309`
+- **반려됨 / 충돌발생 (`danger`):** Bg `#FEE2E2`, Border `#FECDD3`, Text `#B91C1C`
+- **대체일 제안 (`info`):** Bg `#E0F2FE`, Border `#BAE6FD`, Text `#0369A1`
+- **철회됨 (`neutral`):** Bg `#F1F5F9`, Border `#E2E8F0`, Text `#64748B`
+
+---
+
+## 4. 레이아웃 & 스페이싱 시스템 (Layout & Spacing)
+
+### 4.1 4px 기반 스페이싱 (Spacing Scale)
+- `4px` (`--space-1`): 인라인 뱃지 내부 패딩, 아이콘과 레이블 간 간격
+- `8px` (`--space-2`): 칩 내부 패딩, 필터 항목 간격, 셀 내부 요소 간격
+- `12px` (`--space-3`): 기본 컴포넌트 내부 여백, 작은 목록 간격
+- `16px` (`--space-4`): 컨테이너 기본 패딩, 카드 내부 패딩
+- `24px` (`--space-6`): 섹션 간 구분 간격, 메인 툴바 여백
+- `32px` (`--space-8`): 대형 헤더 및 최상위 컨테이너 여백
+
+### 4.2 화면 구조 원칙
+1. **데스크톱 어드민 (`AdminLayout`):**
+   - **사이드바 (220px 고정):** 로고, 병동 명칭(`산부인과 병동`), 메뉴 네비게이션, 로그인 간호사 프로필.
+   - **상단 툴바:** 현재 뷰 네비게이션, 알림 종 아이콘, 빠른 상태 지표.
+   - **콘텐츠 영역:** 100% 폭의 풀 그리드 캘린더 또는 단일 목적 관리 테이블.
+   - **우측 인스펙터 드로어 (Slide-out Drawer, 420px):** 캘린더를 덮거나 축소하지 않고 매끄럽게 오버레이되어 상세 분석/수정 작업을 지원.
+2. **모바일 쉘 (`MobileLayout`):**
+   - **최대 폭 430px 중앙 정렬:** 데스크톱에서도 모바일 앱 형태의 테스트가 가능하도록 섀도우 쉘 제공.
+   - **상단 헤더:** 뒤로가기, 타이틀, 알림 바로가기.
+   - **하단 네비게이션 바 (TabBar):** 5개 핵심 탭 (홈, 근무표, 신청, 알림, 더보기), 활성 인디케이터, 아이폰 홈 인디케이터 Safe-Area 반영.
+
+---
+
+## 5. 아이콘 라이브러리 표준 (Iconography)
+
+모든 아이콘은 **Lucide React**(`lucide-react`) 벡터 아이콘 라이브러리를 표준으로 사용합니다. (이모지 및 저품질 비트맵 아이콘 영구 금지)
+
+### 5.1 아이콘 스펙
+- **기본 크기:** `16px` (컴포넌트 인라인), `18px` (버튼/인풋 접두사), `20px` (탭바/헤더 액션)
+- **Stroke Width:** `1.8px` ~ `2.2px` (시각적 선명함과 정교함 유지)
+- **색상 원칙:** 부모 텍스트의 `currentColor` 상속 또는 시맨틱 상태 색상(`green`, `rose`, `blue`, `amber`) 직접 주입.
+
+### 5.2 표준 아이콘 매핑표
+| 용도 / 기능 | Lucide React 컴포넌트 | 예시 코드 |
+|---|---|---|
+| 승인 완료 / 정상 | `CheckCircle2`, `CheckCheck` | `<CheckCircle2 size={16} strokeWidth={2.2} />` |
+| 캘린더 / 근무 일정 | `Calendar` | `<Calendar size={16} strokeWidth={2.2} />` |
+| 공지 / 오픈 알림 | `Megaphone` | `<Megaphone size={16} strokeWidth={2.2} />` |
+| 교대 변경 / 인력 스왑 | `ArrowLeftRight` | `<ArrowLeftRight size={16} strokeWidth={2.2} />` |
+| 신청 추가 / 생성 | `Plus` | `<Plus size={16} strokeWidth={2} />` |
+| 이동 / 상세 보기 | `ChevronRight` | `<ChevronRight size={14} />` |
+| 경고 / 제약 위반 | `AlertTriangle`, `AlertCircle` | `<AlertCircle size={16} />` |
+| 잠금 / 법정보호 | `ShieldCheck`, `Lock` | `<ShieldCheck size={16} />` |
+| 시간 / 타이머 | `Clock` | `<Clock size={14} />` |
+| 닫기 | `X` | `<X size={18} />` |
+
+---
+
+## 6. 핵심 컴포넌트 스펙 (Core Components)
+
+### 6.1 근무 배지 (`ShiftCell`)
+- **높이 및 라운딩:** `height: 28px`, `border-radius: 6px`
+- **패딩:** `padding: 0 8px`
+- **폰트:** `font-size: 12px`, `font-weight: 700`, `letter-spacing: -0.01em`
+- **구조:** 좌측 근무 코드(D/E/N/OFF) + 우측 근무 시간 또는 인원수 표기.
+
+### 6.2 상태 뱃지 (`StatusBadge`)
+- **높이 및 라운딩:** `height: 24px`, `border-radius: 9999px` (Pill Shape)
+- **패딩:** `padding: 0 9px`
+- **폰트:** `font-size: 12px`, `font-weight: 700`
+- **경계선:** `1px solid` (배경색과 조화되는 저채도 테두리)
+
+### 6.3 캘린더 그리드 셀 (Calendar Day Cell)
+- **최소 높이:** 데스크톱 `104px`, 모바일 `48px`
+- **헤더:** 일자 폰트 `13px` Bold, 공휴일/일요일 로즈(`--color-danger-text`), 토요일 블루(`--color-info-text`).
+- **상태 인디케이터:** 중요 신청일에는 핑크 도트(`cell-note-dot`), 충돌일에는 앰버 보더 하이라이트.
+- **호버 인터랙션:** `background-color: #F8FAFC`, `border-color: #CBD5E1`의 부드러운 트랜지션(0.12s).
+
+### 6.4 드로어 / 인스펙터 패널 (Slide Drawer)
+- **위치:** `position: fixed`, `right: 0`, `top: 0`, `bottom: 0`
+- **너비:** 데스크톱 `440px`, 모바일 `100%`
+- **그림자:** `box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08)`
+- **헤더:** 상단 타이틀 `16px` Bold, 닫기 버튼, 탭 스위처(선택 근무자 상세, 공정성 점수, 대체일 추천).
+
+---
+
+## 7. 검증 및 품질 보증 (QA & Verification)
+
+### 7.1 자동화 검증 기준
+1. **타이포그래피 린트:** 코드베이스 내 `font-size: 10px`, `11px`, `9px` 잔존 여부 0건 유지.
+2. **TypeScript 타입 무결성:** `npm run build` 컴파일 에러 0건.
+3. **수학적 최적화 솔버 무결성:** `pytest backend/tests/` 16개 테스트 전원 통과 (연속근무 5일 제한, 나이트 익일 휴무, 11시간 휴식 간격, 모성보호 야간 배제).
+
+---
+
+*본 디자인 시스템은 Linear의 정보 밀도와 shadcn/ui의 미니멀리즘, Apple의 사용자 경험 철학을 충실히 반영하여 개발되었습니다.*

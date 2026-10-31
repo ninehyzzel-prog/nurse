@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   CheckCircle2, 
-  Heart, 
+  ArrowLeftRight, 
   ChevronRight, 
   Clock, 
   CheckCheck,
-  Sparkles
+  Megaphone
 } from 'lucide-react';
 
 interface NotificationItem {
@@ -78,13 +78,13 @@ export const NotificationsPage: React.FC = () => {
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'LEAVE_APPROVED':
-        return <CheckCircle2 size={15} className="notif-icon green" />;
+        return <CheckCircle2 size={16} className="notif-icon green" strokeWidth={2.2} />;
       case 'SCHEDULE_CONFIRMED':
-        return <Calendar size={15} className="notif-icon blue" />;
+        return <Calendar size={16} className="notif-icon blue" strokeWidth={2.2} />;
       case 'REQUEST_OPEN':
-        return <Sparkles size={15} className="notif-icon purple" />;
+        return <Megaphone size={16} className="notif-icon purple" strokeWidth={2.2} />;
       case 'SHIFT_CHANGE':
-        return <Heart size={15} className="notif-icon pink" />;
+        return <ArrowLeftRight size={16} className="notif-icon pink" strokeWidth={2.2} />;
     }
   };
 
@@ -113,12 +113,12 @@ export const NotificationsPage: React.FC = () => {
         </div>
         {unreadCount > 0 && (
           <button className="btn-read-all" onClick={markAllAsRead}>
-            <CheckCheck size={12} /> 모두 읽음
+            <CheckCheck size={14} /> 모두 읽음
           </button>
         )}
       </div>
 
-      {/* 2. 알림 피드 리스트 (Linear 플랫 스타일) */}
+      {/* 2. 알림 피드 리스트 (Linear 플랫 스타일 & 12px 최소 폰트) */}
       <div className="notifications-feed">
         {notifications.map((item) => (
           <div
@@ -145,10 +145,10 @@ export const NotificationsPage: React.FC = () => {
 
               <div className="nc-bottom-row">
                 <span className="time-text font-mono">
-                  <Clock size={10} /> {item.timeAgo}
+                  <Clock size={12} /> {item.timeAgo}
                 </span>
                 <span className="go-link">
-                  바로가기 <ChevronRight size={11} />
+                  바로가기 <ChevronRight size={13} />
                 </span>
               </div>
             </div>
@@ -178,22 +178,22 @@ export const NotificationsPage: React.FC = () => {
           gap: 8px;
         }
         .nt-title {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
           color: #0F172A;
         }
         .unread-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 700;
           color: #E11D48;
           background-color: #FFE4E6;
-          padding: 1px 6px;
+          padding: 2px 7px;
           border-radius: 4px;
         }
         .btn-read-all {
           background: none;
           border: none;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #64748B;
           cursor: pointer;
@@ -216,7 +216,7 @@ export const NotificationsPage: React.FC = () => {
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
           border-radius: 12px;
-          padding: 12px 14px;
+          padding: 14px;
           display: flex;
           gap: 12px;
           cursor: pointer;
@@ -224,7 +224,6 @@ export const NotificationsPage: React.FC = () => {
         }
         .notif-card:hover {
           border-color: #CBD5E1;
-          background-color: #FFFFFF;
         }
         .notif-card.unread {
           border-left: 3px solid #0F172A;
@@ -236,8 +235,8 @@ export const NotificationsPage: React.FC = () => {
           margin-top: 1px;
         }
         .icon-circle {
-          width: 30px;
-          height: 30px;
+          width: 34px;
+          height: 34px;
           border-radius: 8px;
           background-color: #F8FAFC;
           border: 1px solid #F1F5F9;
@@ -254,7 +253,7 @@ export const NotificationsPage: React.FC = () => {
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 5px;
           min-width: 0;
         }
         .nc-top-row {
@@ -268,9 +267,9 @@ export const NotificationsPage: React.FC = () => {
           gap: 6px;
         }
         .type-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 700;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 4px;
           flex-shrink: 0;
         }
@@ -298,7 +297,7 @@ export const NotificationsPage: React.FC = () => {
         }
 
         .item-desc {
-          font-size: 11px;
+          font-size: 12px;
           color: #475569;
           margin: 0;
           line-height: 1.4;
@@ -311,14 +310,14 @@ export const NotificationsPage: React.FC = () => {
           margin-top: 4px;
         }
         .time-text {
-          font-size: 10px;
+          font-size: 12px;
           color: #94A3B8;
           display: flex;
           align-items: center;
-          gap: 3px;
+          gap: 4px;
         }
         .go-link {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           display: flex;

@@ -222,16 +222,16 @@ export const AutoSchedulePage: React.FC = () => {
           margin-bottom: 2px;
         }
         .tech-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #2563EB;
           background-color: #EFF6FF;
           border: 1px solid #BFDBFE;
-          padding: 1px 5px;
+          padding: 2px 6px;
           border-radius: var(--radius-xs);
         }
         .policy-badge {
-          font-size: 10px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
         .header-title {
@@ -257,16 +257,16 @@ export const AutoSchedulePage: React.FC = () => {
           gap: 6px;
         }
         .scenario-label {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-secondary);
         }
         .scenario-select {
-          height: 28px;
+          height: 30px;
           padding: 0 8px;
           background-color: var(--color-bg-subtle);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-primary);
         }
         .btn-run-solver {
@@ -319,7 +319,7 @@ export const AutoSchedulePage: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 11px;
+          font-size: 12px;
         }
         .metric-item .lbl {
           color: var(--color-text-muted);
@@ -364,7 +364,7 @@ export const AutoSchedulePage: React.FC = () => {
           border: 1px solid #FCA5A5;
           border-radius: var(--radius-xs);
           padding: var(--space-2-5);
-          font-size: 11px;
+          font-size: 12px;
         }
         .guide-title {
           font-weight: 600;
@@ -397,7 +397,7 @@ export const AutoSchedulePage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .title-sub {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
 
@@ -444,9 +444,9 @@ export const AutoSchedulePage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .cand-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
-          padding: 1px 6px;
+          padding: 2px 7px;
           border-radius: var(--radius-xs);
         }
         .cand-badge.balance {
@@ -479,7 +479,7 @@ export const AutoSchedulePage: React.FC = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 11px;
+          font-size: 12px;
         }
         .c-lbl {
           color: var(--color-text-muted);

@@ -50,10 +50,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = ''
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          height: 22px;
-          padding: 0 8px;
+          height: 24px;
+          padding: 0 9px;
           border-radius: var(--radius-full);
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 700;
           letter-spacing: -0.01em;
           border-width: 1px;

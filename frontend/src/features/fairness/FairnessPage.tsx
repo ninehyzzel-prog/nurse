@@ -146,7 +146,7 @@ export const FairnessPage: React.FC = () => {
           border-radius: var(--radius-sm);
         }
         .score-lbl {
-          font-size: 11px;
+          font-size: 12px;
           color: #047857;
         }
         .score-val {
@@ -156,12 +156,12 @@ export const FairnessPage: React.FC = () => {
           font-feature-settings: "tnum";
         }
         .score-tag {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           background-color: #10B981;
           color: #FFFFFF;
-          padding: 1px 4px;
-          border-radius: 2px;
+          padding: 1px 5px;
+          border-radius: 3px;
         }
 
         /* Metric Grid */
@@ -190,7 +190,7 @@ export const FairnessPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .panel-sub {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-muted);
         }
         .panel-body {
@@ -219,7 +219,7 @@ export const FairnessPage: React.FC = () => {
           color: var(--color-text-primary);
         }
         .s-val {
-          font-size: 11px;
+          font-size: 12px;
           color: var(--color-text-secondary);
         }
         .bar-track {
@@ -244,7 +244,7 @@ export const FairnessPage: React.FC = () => {
           background-color: #FAFAFA;
           padding: 6px 8px;
           text-align: left;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: var(--color-text-secondary);
           border-bottom: 1px solid var(--color-border);
@@ -259,15 +259,15 @@ export const FairnessPage: React.FC = () => {
         }
         .font-mono {
           font-feature-settings: "tnum";
-          font-size: 11px;
+          font-size: 12px;
         }
         .status-tag.ok {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #15803D;
           background-color: #DCFCE7;
-          padding: 1px 5px;
-          border-radius: 2px;
+          padding: 1px 6px;
+          border-radius: 3px;
         }
       `}</style>
     </div>

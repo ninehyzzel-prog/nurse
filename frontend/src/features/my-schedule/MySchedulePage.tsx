@@ -262,7 +262,7 @@ export const MySchedulePage: React.FC = () => {
           gap: 6px;
         }
         .sum-chip {
-          font-size: 11px;
+          font-size: 12px;
           padding: 3px 8px;
           border-radius: 5px;
           font-weight: 500;
@@ -290,7 +290,7 @@ export const MySchedulePage: React.FC = () => {
           grid-template-columns: repeat(7, 1fr);
           text-align: center;
           padding: 6px 0;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #94A3B8;
         }
@@ -381,17 +381,17 @@ export const MySchedulePage: React.FC = () => {
           color: #0F172A;
         }
         .today-badge {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           background-color: #F1F5F9;
-          padding: 1px 5px;
+          padding: 1px 6px;
           border-radius: 4px;
         }
         .detail-arrow-btn {
           background: none;
           border: none;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #64748B;
           display: flex;
@@ -423,7 +423,7 @@ export const MySchedulePage: React.FC = () => {
           gap: 5px;
         }
         .location-text {
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
         }
 
@@ -433,7 +433,7 @@ export const MySchedulePage: React.FC = () => {
           justify-content: space-between;
           border-top: 1px solid #F1F5F9;
           padding-top: 10px;
-          font-size: 11px;
+          font-size: 12px;
           color: #475569;
         }
         .colleagues-left {
@@ -443,7 +443,7 @@ export const MySchedulePage: React.FC = () => {
         }
         .user-icon { color: #94A3B8; }
         .shift-lead-pill {
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 600;
           color: #059669;
           background-color: #ECFDF5;
@@ -461,7 +461,7 @@ export const MySchedulePage: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          font-size: 11px;
+          font-size: 12px;
         }
         .qa-left {
           display: flex;
@@ -475,7 +475,7 @@ export const MySchedulePage: React.FC = () => {
           border: 1px solid #CBD5E1;
           border-radius: 6px;
           padding: 4px 8px;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
           color: #0F172A;
           cursor: pointer;
@@ -509,7 +509,7 @@ export const MySchedulePage: React.FC = () => {
           margin: 0 0 2px 0;
         }
         .sh-title-box p {
-          font-size: 11px;
+          font-size: 12px;
           color: #64748B;
           margin: 0;
         }
