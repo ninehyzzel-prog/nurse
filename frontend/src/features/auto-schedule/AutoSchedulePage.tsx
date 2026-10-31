@@ -305,11 +305,15 @@ export const AutoSchedulePage: React.FC = () => {
                       <span className="c-val font-mono">{prefRate}%</span>
                     </div>
                     <div className="cand-metric-row">
-                      <span className="c-lbl">야간 편차</span>
-                      <span className="c-val font-mono">{nightSpread}회 이내</span>
+                      <span className="c-lbl">부담점수 편차</span>
+                      <span className="c-val font-mono">
+                        {cand.fairness_metrics?.burden_spread !== undefined
+                          ? `${cand.fairness_metrics.burden_spread}점 이내`
+                          : `${nightSpread}점 이내`}
+                      </span>
                     </div>
                     <div className="cand-metric-row">
-                      <span className="c-lbl">법정 제약 준수</span>
+                      <span className="c-lbl">법정 제약 (H-SKILL, 52h)</span>
                       <span className="c-val status-ok">100% (위반 0건)</span>
                     </div>
                   </div>

@@ -407,6 +407,23 @@ def generate_schedule_candidates(
         emp = s.employment_periods[0] if s.employment_periods else None
         can_night = emp.can_work_night if emp else True
         emp_type = emp.employment_type if emp else "REGULAR"
+
+        # 직원 역량 목록 (H-SKILL)
+        skills = [
+            sp.skill.code for sp in s.skill_periods 
+            if sp.skill and sp.valid_from <= period.start_date and (not sp.valid_to or sp.valid_to >= period.end_date)
+        ]
+
+        # 3개월 롤링 누적 이월치 조회 (부담점수제)
+        carry = (
+            db.query(models.MonthlyCarryoverBalance)
+            .filter_by(staff_id=s.id)
+            .order_by(models.MonthlyCarryoverBalance.period_start_date.desc())
+            .first()
+        )
+        prior_excess = float(carry.burden_excess_ratio) * 10.0 if carry else 0.0
+        avail_ratio = 0.5 if emp_type == "PART_TIME" else 1.0
+
         staff_inputs.append(
             StaffInput(
                 id=s.id,
@@ -414,8 +431,26 @@ def generate_schedule_candidates(
                 can_night=can_night,
                 employment_type=emp_type,
                 max_consecutive_days=5,
+                skills=skills,
+                prior_burden_excess=prior_excess,
+                availability_ratio=avail_ratio,
             )
         )
+
+    # 전월 말 배정 이력 (H-BOUNDARY)
+    prev_date = period.start_date - datetime.timedelta(days=1)
+    prev_assignments = (
+        db.query(models.ShiftAssignment)
+        .filter(models.ShiftAssignment.local_start_date == prev_date)
+        .all()
+    )
+    lookback_inputs = []
+    for pa in prev_assignments:
+        code = "DAY" if "day" in pa.shift_template_version_id else "NIGHT" if "night" in pa.shift_template_version_id else "OFF"
+        lookback_inputs.append({"staff_id": pa.staff_id, "date": pa.local_start_date, "shift_code": code})
+
+    # 공휴일 (11월 3일 등)
+    holiday_dates = [datetime.date(2026, 11, 3)]
 
     # 시프트 템플릿 버전 매핑
     templates = db.query(models.ShiftTemplate).filter_by(ward_id=period.ward_id).all()
@@ -476,6 +511,8 @@ def generate_schedule_candidates(
         pinned_assignments=pinned_inputs,
         default_day_coverage=day_coverage,
         default_night_coverage=night_coverage,
+        lookback_assignments=lookback_inputs,
+        holiday_dates=holiday_dates,
     )
 
     # 3가지 모드로 실행
