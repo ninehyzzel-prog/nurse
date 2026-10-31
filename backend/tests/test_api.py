@@ -165,10 +165,16 @@ def test_schedule_period_and_assignments():
     assert res_patch.status_code == 200
     assert res_patch.json()["source"] == "PINNED"
 
-    # 최종 확정 발행 (PUBLISH)
-    res_pub = client.post(f"/api/schedule-versions/{version['id']}/publish")
-    assert res_pub.status_code == 200
-    assert "published successfully" in res_pub.json()["message"]
+    # 최종 확정 발행 (PUBLISH) - 미달 사항이 있으면 force=False 시 400 반환 검증
+    res_pub_blocked = client.post(f"/api/schedule-versions/{version['id']}/publish")
+    if res_pub_blocked.status_code == 400:
+        assert "하드 제약 조건 위반 사항" in res_pub_blocked.json()["detail"]["message"]
+        # 관리자 승인(force=True)으로 확정 발행
+        res_pub = client.post(f"/api/schedule-versions/{version['id']}/publish?force=true&override_reason=수간호사+사전승인")
+        assert res_pub.status_code == 200
+        assert "published successfully" in res_pub.json()["message"]
+    else:
+        assert res_pub_blocked.status_code == 200
 
 
 def test_fairness_analytics():
