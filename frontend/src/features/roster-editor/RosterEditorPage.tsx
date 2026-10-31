@@ -714,17 +714,21 @@ export const RosterEditorPage: React.FC = () => {
           justify-content: space-between;
           background-color: #FFFFFF;
           gap: 16px;
+          overflow-x: auto;
         }
 
         .toolbar-left {
           display: flex;
           align-items: center;
           gap: 16px;
+          flex-shrink: 0;
         }
         .month-title-wrap {
           display: flex;
           align-items: center;
           gap: 10px;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
         .month-heading {
           font-size: 15px;
@@ -732,6 +736,7 @@ export const RosterEditorPage: React.FC = () => {
           color: #0F172A;
           letter-spacing: -0.02em;
           margin: 0;
+          white-space: nowrap;
         }
         .month-nav-group {
           display: flex;
@@ -801,6 +806,7 @@ export const RosterEditorPage: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 12px;
+          flex-shrink: 0;
         }
         .metric-pill {
           display: flex;
@@ -889,6 +895,7 @@ export const RosterEditorPage: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 8px;
+          flex-shrink: 0;
         }
         .action-btn {
           display: inline-flex;
