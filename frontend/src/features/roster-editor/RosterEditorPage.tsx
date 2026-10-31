@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MOCK_STAFF, generateMockAssignments } from '../../data/mockData';
 import type { ShiftAssignment } from '../../types';
 import { TossIcon } from '../../components/ui/TossIcon';
@@ -40,6 +40,7 @@ type DrawerMode = 'NONE' | 'AI_OPTIMIZE' | 'CONFLICT' | 'REQUEST' | 'STAFF';
 type ViewMode = 'STAFF' | 'MONTH' | 'WEEK';
 
 export const RosterEditorPage: React.FC = () => {
+  const navigate = useNavigate();
   const { periodId: routePeriodId } = useParams<{ periodId?: string }>();
   const { colors, openColorModal } = useShiftColors();
 
@@ -62,6 +63,20 @@ export const RosterEditorPage: React.FC = () => {
 
   const [currentYear, setCurrentYear] = useState<number>(initialYear);
   const [currentMonth, setCurrentMonth] = useState<number>(initialMonth);
+
+  useEffect(() => {
+    if (routePeriodId && routePeriodId.includes('-')) {
+      const parts = routePeriodId.replace('period-', '').split('-');
+      if (parts[0] && parts[0].length === 4) setCurrentYear(parseInt(parts[0], 10));
+      if (parts[1]) setCurrentMonth(parseInt(parts[1], 10));
+    }
+  }, [routePeriodId]);
+
+  const changeMonth = (newYear: number, newMonth: number) => {
+    setCurrentYear(newYear);
+    setCurrentMonth(newMonth);
+    navigate(`/admin/roster/${newYear}-${String(newMonth).padStart(2, '0')}`, { replace: true });
+  };
   const periodId = `period-${currentYear}-${String(currentMonth).padStart(2, '0')}`;
   const [versionId, setVersionId] = useState<string>('ver-d37e15bd');
 
@@ -505,10 +520,9 @@ export const RosterEditorPage: React.FC = () => {
                 aria-label="이전 달"
                 onClick={() => {
                   if (currentMonth === 1) {
-                    setCurrentYear((y) => y - 1);
-                    setCurrentMonth(12);
+                    changeMonth(currentYear - 1, 12);
                   } else {
-                    setCurrentMonth((m) => m - 1);
+                    changeMonth(currentYear, currentMonth - 1);
                   }
                 }}
               >
@@ -519,10 +533,9 @@ export const RosterEditorPage: React.FC = () => {
                 aria-label="다음 달"
                 onClick={() => {
                   if (currentMonth === 12) {
-                    setCurrentYear((y) => y + 1);
-                    setCurrentMonth(1);
+                    changeMonth(currentYear + 1, 1);
                   } else {
-                    setCurrentMonth((m) => m + 1);
+                    changeMonth(currentYear, currentMonth + 1);
                   }
                 }}
               >
@@ -531,8 +544,7 @@ export const RosterEditorPage: React.FC = () => {
               <button 
                 className="btn-today-text"
                 onClick={() => {
-                  setCurrentYear(2026);
-                  setCurrentMonth(11);
+                  changeMonth(2026, 11);
                 }}
               >
                 오늘

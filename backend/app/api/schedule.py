@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import json
 import uuid
@@ -52,12 +53,185 @@ def compute_utc_times(local_date_str: str, starts_at_str: str, ends_at_str: str,
     return start_utc, end_utc
 
 
+def get_korean_holidays(year: int, month: int) -> List[datetime.date]:
+    """해당 연/월의 한국 주요 법정 공휴일 목록 반환"""
+    holidays = []
+    fixed = {
+        1: [1],       # 신정 (1/1)
+        3: [1],       # 삼일절 (3/1)
+        5: [5],       # 어린이날 (5/5)
+        6: [6],       # 현충일 (6/6)
+        8: [15],      # 광복절 (8/15)
+        10: [3, 9],   # 개천절 (10/3), 한글날 (10/9)
+        12: [25],     # 성탄절 (12/25)
+    }
+    if month in fixed:
+        for d in fixed[month]:
+            try:
+                holidays.append(datetime.date(year, month, d))
+            except ValueError:
+                pass
+
+    specials = {
+        (2026, 2): [16, 17, 18], # 설날 연휴
+        (2026, 3): [2],          # 삼일절 대체공휴일
+        (2026, 5): [6, 24],      # 대체공휴일 / 부처님오신날
+        (2026, 8): [17],         # 광복절 대체공휴일
+        (2026, 9): [24, 25, 26], # 추석 연휴
+        (2026, 10): [5, 12],     # 대체공휴일
+        (2026, 11): [3],         # 병원 기념일
+        (2027, 1): [1],
+        (2027, 2): [6, 7, 8, 9], # 설 연휴
+    }
+    if (year, month) in specials:
+        for d in specials[(year, month)]:
+            try:
+                holidays.append(datetime.date(year, month, d))
+            except ValueError:
+                pass
+    return holidays
+
+
+def get_or_create_schedule_period(
+    period_id: str,
+    ward_id: Optional[str],
+    db: Session,
+) -> models.SchedulePeriod:
+    """
+    클라이언트가 요청한 period_id('period-2026-10', '2026-10', 'period-2026-12' 등)가
+    DB에 존재하지 않으면 해당 연월의 1일~말일 기준으로 SchedulePeriod, ScheduleVersion,
+    초기 근무 배정(ShiftAssignment)을 자동으로 동적 생성하여 반환합니다.
+    """
+    target_ward_id = ward_id or "ward-obgyn"
+
+    # 1. 기존 ID로 직접 조회
+    period = db.query(models.SchedulePeriod).filter_by(id=period_id).first()
+    if not period and not period_id.startswith("period-"):
+        period = db.query(models.SchedulePeriod).filter_by(id=f"period-{period_id}").first()
+    if not period and period_id.startswith("period-"):
+        period = db.query(models.SchedulePeriod).filter_by(id=period_id.replace("period-", "")).first()
+
+    if period:
+        # 이미 존재하는 경우, ScheduleVersion이 최소 1개 있는지 확인
+        ver = db.query(models.ScheduleVersion).filter_by(schedule_period_id=period.id).first()
+        if not ver:
+            ver = models.ScheduleVersion(
+                id=f"ver-{period.id}-v1",
+                schedule_period_id=period.id,
+                version_number=1,
+                status="DRAFT",
+                created_by="user-headnurse",
+            )
+            db.add(ver)
+            db.commit()
+            db.refresh(period)
+        return period
+
+    # 2. 연도 및 월 파싱
+    clean_id = period_id.replace("period-", "").strip()
+    parts = clean_id.split("-")
+    year = 2026
+    month = 11
+    if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
+        year = int(parts[0])
+        month = int(parts[1])
+
+    canonical_id = f"period-{year}-{month:02d}"
+    # canonical_id로 재조회
+    period = db.query(models.SchedulePeriod).filter_by(id=canonical_id).first()
+    if period:
+        return period
+
+    # 3. 해당 월의 시작일과 말일 계산
+    _, last_day = calendar.monthrange(year, month)
+    start_date = datetime.date(year, month, 1)
+    end_date = datetime.date(year, month, last_day)
+
+    # 4. SchedulePeriod 생성
+    period = models.SchedulePeriod(
+        id=canonical_id,
+        ward_id=target_ward_id,
+        start_date=start_date,
+        end_date=end_date,
+        status="PLANNING",
+        policy_version_id="policy-v1",
+        version=1,
+    )
+    db.add(period)
+    db.flush()
+
+    # 5. ScheduleVersion 초안 생성
+    sched_ver = models.ScheduleVersion(
+        id=f"ver-{year}-{month:02d}-v1",
+        schedule_period_id=period.id,
+        version_number=1,
+        status="DRAFT",
+        created_by="user-headnurse",
+        change_reason=f"{year}년 {month}월 기본 근무표 초안 생성",
+    )
+    db.add(sched_ver)
+    db.flush()
+
+    # 6. 병동 활성 간호사 초기 배정 데이터 생성
+    memberships = db.query(models.WardMembership).filter_by(ward_id=target_ward_id).all()
+    user_ids = [m.user_id for m in memberships]
+    staff_records = (
+        db.query(models.StaffProfile)
+        .filter(
+            models.StaffProfile.user_id.in_(user_ids),
+            models.StaffProfile.active_status == "ACTIVE",
+        )
+        .all()
+    )
+    if not staff_records:
+        staff_records = db.query(models.StaffProfile).filter_by(active_status="ACTIVE").all()
+
+    tmpl_day = db.query(models.ShiftTemplateVersion).filter(models.ShiftTemplateVersion.id.like("%day%")).first()
+    tmpl_night = db.query(models.ShiftTemplateVersion).filter(models.ShiftTemplateVersion.id.like("%night%")).first()
+    tmpl_off = db.query(models.ShiftTemplateVersion).filter(models.ShiftTemplateVersion.id.like("%off%")).first()
+
+    day_ver_id = tmpl_day.id if tmpl_day else "shift-day-v1"
+    night_ver_id = tmpl_night.id if tmpl_night else "shift-night-v1"
+    off_ver_id = tmpl_off.id if tmpl_off else "shift-off-v1"
+
+    for s_idx, s in enumerate(staff_records):
+        emp = s.employment_periods[0] if s.employment_periods else None
+        can_night = emp.can_work_night if emp else True
+        for day in range(1, last_day + 1):
+            dt = datetime.date(year, month, day)
+            if can_night:
+                cycle = (day + s_idx) % 6
+                t_ver_id = day_ver_id if cycle in (0, 1) else night_ver_id if cycle == 2 else off_ver_id
+            else:
+                dow = dt.weekday()
+                t_ver_id = day_ver_id if dow in (0, 1, 2) else off_ver_id
+
+            is_pinned = (day == 15 and s.id == "staff-1")
+            db.add(
+                models.ShiftAssignment(
+                    id=f"assign-{canonical_id}-{s.id}-{day}",
+                    schedule_version_id=sched_ver.id,
+                    staff_id=s.id,
+                    shift_template_version_id=t_ver_id,
+                    local_start_date=dt,
+                    start_at_utc=datetime.datetime.combine(dt, datetime.time(8, 0)),
+                    end_at_utc=datetime.datetime.combine(dt, datetime.time(18, 0)),
+                    paid_work_minutes=540 if "day" in t_ver_id else 780 if "night" in t_ver_id else 0,
+                    break_minutes=60 if "day" in t_ver_id or "night" in t_ver_id else 0,
+                    source="PINNED" if is_pinned else "AUTO",
+                    is_pinned=is_pinned,
+                )
+            )
+
+    db.commit()
+    db.refresh(period)
+    return period
+
+
 @router.get("/wards/{ward_id}/schedule-periods/{period_id}", response_model=SchedulePeriodOut)
 def get_schedule_period(ward_id: str, period_id: str, db: Session = Depends(get_db)):
-    """특정 기간의 근무표와 배정 매트릭스 조회"""
-    period = db.query(models.SchedulePeriod).filter_by(id=period_id, ward_id=ward_id).first()
-    if not period:
-        raise HTTPException(status_code=404, detail="Schedule period not found")
+    """특정 기간의 근무표와 배정 매트릭스 조회 (없을 시 연월 기준 동적 자동 생성)"""
+    period = get_or_create_schedule_period(period_id, ward_id, db)
 
     latest_ver = (
         db.query(models.ScheduleVersion)
@@ -379,9 +553,7 @@ def generate_schedule_candidates(
     - 경합 및 공정성 점수 breakdown 계산
     - 설명 가능한 AI("이렇게 편성했어요") 리포트 생성
     """
-    period = db.query(models.SchedulePeriod).filter_by(id=period_id).first()
-    if not period:
-        raise HTTPException(status_code=404, detail="Schedule period not found")
+    period = get_or_create_schedule_period(period_id, "ward-obgyn", db)
 
     # 병동의 전체 재직 직원 목록
     memberships = (
@@ -449,8 +621,8 @@ def generate_schedule_candidates(
         code = "DAY" if "day" in pa.shift_template_version_id else "NIGHT" if "night" in pa.shift_template_version_id else "OFF"
         lookback_inputs.append({"staff_id": pa.staff_id, "date": pa.local_start_date, "shift_code": code})
 
-    # 공휴일 (11월 3일 등)
-    holiday_dates = [datetime.date(2026, 11, 3)]
+    # 공휴일 (해당 연월 법정 공휴일 자동 산출)
+    holiday_dates = get_korean_holidays(period.start_date.year, period.start_date.month)
 
     # 시프트 템플릿 버전 매핑
     templates = db.query(models.ShiftTemplate).filter_by(ward_id=period.ward_id).all()
@@ -622,9 +794,7 @@ def apply_schedule_candidate(
     - 고정(PIN)된 배정은 안전하게 보존
     - 최신 ScheduleValidator 실행하여 실시간 유효성 리포트 반환
     """
-    period = db.query(models.SchedulePeriod).filter_by(id=period_id).first()
-    if not period:
-        raise HTTPException(status_code=404, detail="Schedule period not found")
+    period = get_or_create_schedule_period(period_id, "ward-obgyn", db)
 
     cand = db.query(models.RunCandidate).filter_by(id=candidate_id).first()
     if not cand:
@@ -772,9 +942,11 @@ def apply_schedule_candidate(
 @router.get("/schedule-periods/{period_id}/runs/latest", response_model=Optional[ScheduleRunOut])
 def get_latest_schedule_run(period_id: str, db: Session = Depends(get_db)):
     """가장 최근에 실행된 자동 최적화 결과와 3개 후보안 조회"""
+    clean_id = period_id.replace("period-", "")
+    canonical_id = f"period-{clean_id}"
     run = (
         db.query(models.ScheduleRun)
-        .filter_by(schedule_period_id=period_id)
+        .filter(models.ScheduleRun.schedule_period_id.in_([period_id, canonical_id, clean_id]))
         .order_by(models.ScheduleRun.created_at.desc())
         .first()
     )

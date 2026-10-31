@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from backend.app.database import get_db
 import backend.app.models as models
 from backend.app.services.scoring_service import ScoringService, ExplanationEngine
+from backend.app.api.schedule import get_or_create_schedule_period, get_korean_holidays
 
 router = APIRouter(prefix="/api", tags=["Fairness & Analytics"])
 
@@ -65,14 +66,12 @@ def get_schedule_period_scoring_report(period_id: str, db: Session = Depends(get
     """
     편성 기간별 간호사 정량 점수 보고서 (QA-SCORE-01 수치 검증 포함)
     """
-    period = db.query(models.SchedulePeriod).filter_by(id=period_id).first()
-    if not period:
-        raise HTTPException(status_code=404, detail="Schedule period not found")
+    period = get_or_create_schedule_period(period_id, "ward-obgyn", db)
 
     # 최신 확정 또는 초안 버전
     version = (
         db.query(models.ScheduleVersion)
-        .filter_by(schedule_period_id=period_id)
+        .filter_by(schedule_period_id=period.id)
         .order_by(models.ScheduleVersion.version_number.desc())
         .first()
     )
@@ -84,8 +83,8 @@ def get_schedule_period_scoring_report(period_id: str, db: Session = Depends(get
     # 간호사 목록
     staff_list = db.query(models.StaffProfile).filter_by(active_status="ACTIVE").all()
 
-    # 공휴일 (11월 3일 등)
-    holidays = [datetime.date(2026, 11, 3)]
+    # 공휴일 (해당 연월 법정 공휴일 자동 산출)
+    holidays = get_korean_holidays(period.start_date.year, period.start_date.month)
 
     nurse_reports = []
     total_group_burden = Decimal("0.00")

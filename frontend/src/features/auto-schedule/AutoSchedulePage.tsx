@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MOCK_CANDIDATES } from '../../data/mockData';
 import { 
   Wand2, 
   ShieldCheck,
   Layers,
-  ArrowRight
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { TossIcon } from '../../components/ui/TossIcon';
 import { 
@@ -17,6 +19,39 @@ import {
 
 export const AutoSchedulePage: React.FC = () => {
   const navigate = useNavigate();
+  const { periodId: routePeriodId } = useParams<{ periodId?: string }>();
+
+  // 1. 기간 파싱 및 상태 관리
+  const initialYear = useMemo(() => {
+    if (routePeriodId && routePeriodId.includes('-')) {
+      const parts = routePeriodId.replace('period-', '').split('-');
+      if (parts[0] && parts[0].length === 4) return parseInt(parts[0], 10);
+    }
+    return 2026;
+  }, [routePeriodId]);
+
+  const initialMonth = useMemo(() => {
+    if (routePeriodId && routePeriodId.includes('-')) {
+      const parts = routePeriodId.replace('period-', '').split('-');
+      if (parts[1]) return parseInt(parts[1], 10);
+    }
+    return 11;
+  }, [routePeriodId]);
+
+  const [currentYear, setCurrentYear] = useState<number>(initialYear);
+  const [currentMonth, setCurrentMonth] = useState<number>(initialMonth);
+
+  useEffect(() => {
+    if (routePeriodId && routePeriodId.includes('-')) {
+      const parts = routePeriodId.replace('period-', '').split('-');
+      if (parts[0] && parts[0].length === 4) setCurrentYear(parseInt(parts[0], 10));
+      if (parts[1]) setCurrentMonth(parseInt(parts[1], 10));
+    }
+  }, [routePeriodId]);
+
+  const periodId = `period-${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+  const daysInMonth = useMemo(() => new Date(currentYear, currentMonth, 0).getDate(), [currentYear, currentMonth]);
+
   const [isSolving, setIsSolving] = useState(false);
   const [solverResult, setSolverResult] = useState<'IDLE' | 'FEASIBLE' | 'INFEASIBLE'>('FEASIBLE');
   const [candidates, setCandidates] = useState<ApiCandidate[]>([]);
@@ -29,24 +64,55 @@ export const AutoSchedulePage: React.FC = () => {
 
   const [coveragePreset, setCoveragePreset] = useState<'NORMAL' | 'OVERLOAD'>('NORMAL');
 
-  // 마운트 시 최신 솔버 실행 기록 조회
+  // 연월 전환 핸들러
+  const handlePrevMonth = () => {
+    let y = currentYear;
+    let m = currentMonth - 1;
+    if (m < 1) {
+      y -= 1;
+      m = 12;
+    }
+    setCurrentYear(y);
+    setCurrentMonth(m);
+    navigate(`/admin/auto-schedule/${y}-${String(m).padStart(2, '0')}`);
+  };
+
+  const handleNextMonth = () => {
+    let y = currentYear;
+    let m = currentMonth + 1;
+    if (m > 12) {
+      y += 1;
+      m = 1;
+    }
+    setCurrentYear(y);
+    setCurrentMonth(m);
+    navigate(`/admin/auto-schedule/${y}-${String(m).padStart(2, '0')}`);
+  };
+
+  // 마운트 또는 periodId 변경 시 해당 월의 최신 솔버 실행 기록 조회
   useEffect(() => {
     async function loadLatest() {
+      setErrorMessage(null);
+      setAppliedMessage(null);
       try {
-        const run = await fetchLatestScheduleRun('period-2026-11');
+        const run = await fetchLatestScheduleRun(periodId);
         if (run && run.candidates && run.candidates.length > 0) {
           setCandidates(run.candidates);
           setSelectedCandId(run.candidates[0].id);
           setSelectedRank(run.candidates[0].rank);
           setSolverResult(run.status === 'INFEASIBLE' ? 'INFEASIBLE' : 'FEASIBLE');
           if (run.diagnostics) setDiagnosticsData(run.diagnostics);
+        } else {
+          setCandidates([]);
+          setSelectedCandId('');
+          setSolverResult('FEASIBLE');
         }
       } catch (e) {
         console.warn('Latest schedule run fetch error, falling back to mock:', e);
       }
     }
     loadLatest();
-  }, []);
+  }, [periodId]);
 
   // 솔버 실행 핸들러 (실제 OR-Tools CP-SAT 백엔드 호출)
   const handleRunOptimization = async () => {
@@ -57,19 +123,19 @@ export const AutoSchedulePage: React.FC = () => {
     try {
       if (coveragePreset === 'OVERLOAD') {
         // 인원 부족 시나리오: 일자별 주간 4명 / 야간 3명 (필요 인원 7명 > 가용 인원 6명)
-        const run = await generateScheduleCandidates('period-2026-11', 3.0, 4, 3);
+        const run = await generateScheduleCandidates(periodId, 3.0, 4, 3);
         setSolverResult(run.status as any);
         if (run.status === 'INFEASIBLE') {
           setDiagnosticsData(
             run.diagnostics || {
               code: 'INSUFFICIENT_STAFF',
-              message: '병동 전체 가용 인력(6명) 대비 요구된 교대 최소 인원(Day 4명 + Night 3명 = 총 7명)이 초과되어 수학적 해를 도출할 수 없습니다.',
+              message: `병동 전체 가용 인력(6명) 대비 요구된 교대 최소 인원(Day 4명 + Night 3명 = 총 7명)이 초과되어 ${currentYear}년 ${currentMonth}월 수학적 해를 도출할 수 없습니다.`,
             }
           );
         }
       } else {
         // 정상 커버리지 시나리오: Day 2명 / Night 1명 (충족 가능)
-        const run = await generateScheduleCandidates('period-2026-11', 5.0, 2, 1);
+        const run = await generateScheduleCandidates(periodId, 5.0, 2, 1);
         setSolverResult(run.status as any);
         if (run.candidates && run.candidates.length > 0) {
           setCandidates(run.candidates);
@@ -88,6 +154,7 @@ export const AutoSchedulePage: React.FC = () => {
         });
       } else {
         setSolverResult('FEASIBLE');
+        setErrorMessage(err.message || '스케줄 자동 생성에 실패했습니다.');
       }
     } finally {
       setIsSolving(false);
@@ -104,8 +171,8 @@ export const AutoSchedulePage: React.FC = () => {
     setAppliedMessage(null);
 
     try {
-      const res = await applyScheduleCandidate('period-2026-11', targetId);
-      setAppliedMessage(`후보 ${targetRank}안이 전체 근무표에 성공적으로 배정되었습니다! (${res.applied_count || 180}건 반영)`);
+      const res = await applyScheduleCandidate(periodId, targetId);
+      setAppliedMessage(`후보 ${targetRank}안이 ${currentYear}년 ${currentMonth}월 전체 근무표에 성공적으로 배정되었습니다! (${res.applied_count || (daysInMonth * 6)}건 반영)`);
     } catch (err: any) {
       console.error('Apply error:', err);
       setErrorMessage(err.message || '후보안 적용에 실패했습니다.');
@@ -123,9 +190,20 @@ export const AutoSchedulePage: React.FC = () => {
             <span className="tech-badge">OR-Tools CP-SAT</span>
             <span className="policy-badge">정책 v1 스냅샷</span>
           </div>
-          <h2 className="header-title">월간 자동 근무표 편성 오케스트레이터</h2>
+          <div className="title-month-row">
+            <h2 className="header-title">월간 자동 근무표 편성 오케스트레이터</h2>
+            <div className="month-nav-pill">
+              <button className="month-arrow-btn" onClick={handlePrevMonth} title="이전 달">
+                <ChevronLeft size={16} />
+              </button>
+              <span className="month-text font-mono">{currentYear}년 {currentMonth}월</span>
+              <button className="month-arrow-btn" onClick={handleNextMonth} title="다음 달">
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
           <p className="header-desc">
-            법적 필수 최저기준(최소 11시간 휴식 보장, 5연속 근무 상한)을 엄격히 충족하는 최적 스케줄 후보안을 탐색합니다.
+            {currentYear}년 {currentMonth}월 법적 필수 최저기준(최소 11시간 휴식 보장, 5연속 근무 상한)을 엄격히 충족하는 최적 스케줄 후보안을 탐색합니다.
           </p>
         </div>
 
@@ -157,7 +235,7 @@ export const AutoSchedulePage: React.FC = () => {
       <div className="diagnosis-strip">
         <div className="strip-title">
           <ShieldCheck size={14} className="strip-icon" />
-          <span>사전 인력 실현가능성 진단</span>
+          <span>사전 인력 실현가능성 진단 ({currentYear}년 {currentMonth}월)</span>
         </div>
         <div className="strip-metrics">
           <div className="metric-item">
@@ -166,7 +244,11 @@ export const AutoSchedulePage: React.FC = () => {
           </div>
           <div className="metric-item">
             <span className="lbl">요구 총 인시</span>
-            <span className="val">{coveragePreset === 'NORMAL' ? '720인시 (주 28h/인)' : '1440인시 (주 56h/인)'}</span>
+            <span className="val">
+              {coveragePreset === 'NORMAL' 
+                ? `${daysInMonth * 24}인시 (주 ${Math.round((daysInMonth * 24 / 6) / (daysInMonth / 7))}h/인)` 
+                : `${daysInMonth * 56}인시 (주 ${Math.round((daysInMonth * 56 / 6) / (daysInMonth / 7))}h/인)`}
+            </span>
           </div>
           <div className="metric-item">
             <span className="lbl">11시간 휴식 기준</span>
@@ -186,8 +268,8 @@ export const AutoSchedulePage: React.FC = () => {
             <TossIcon name="check" size={16} />
             <span>{appliedMessage}</span>
           </div>
-          <button className="btn-go-roster" onClick={() => navigate('/admin/roster/2026-11')}>
-            근무표 확인 <ArrowRight size={13} />
+          <button className="btn-go-roster" onClick={() => navigate(`/admin/roster/${currentYear}-${String(currentMonth).padStart(2, '0')}`)}>
+            {currentYear}년 {currentMonth}월 근무표 확인 <ArrowRight size={13} />
           </button>
         </div>
       )}
@@ -383,11 +465,48 @@ export const AutoSchedulePage: React.FC = () => {
           font-size: 12px;
           color: var(--color-text-muted);
         }
+        .title-month-row {
+          display: flex;
+          align-items: center;
+          gap: var(--space-3);
+        }
         .header-title {
           font-size: var(--text-md);
           font-weight: 700;
           color: var(--color-text-primary);
           margin: 0;
+        }
+        .month-nav-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          padding: 2px 6px;
+        }
+        .month-arrow-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 4px;
+          color: var(--color-text-secondary);
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: all 0.12s;
+        }
+        .month-arrow-btn:hover {
+          background-color: var(--color-bg-subtle);
+          color: var(--color-text-primary);
+        }
+        .month-text {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-text-primary);
+          padding: 0 4px;
         }
         .header-desc {
           font-size: var(--text-xs);
