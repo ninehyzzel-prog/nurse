@@ -20,7 +20,7 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
   const isOff = !template || template.code === 'OFF';
   const colorToken = isOff ? 'shift-off' : template.colorToken;
   const label = isOff ? 'OFF' : template.label;
-  const codeChar = isOff ? 'OFF' : template.code[0];
+  const codeChar = isOff ? 'OFF' : template.code === 'DAY' ? 'D' : template.code === 'NIGHT' ? 'N' : template.code === 'EVENING' ? 'E' : template.code[0];
 
   return (
     <div
@@ -33,72 +33,73 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
           onClick?.();
         }
       }}
-      className={`shift-badge ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
+      className={`shift-capsule ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
       style={{
         backgroundColor: `var(--${colorToken}-bg)`,
         color: `var(--${colorToken}-text)`,
         borderColor: `var(--${colorToken}-border)`,
       }}
-      title={template ? `${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal})` : '오프 (휴식)'}
+      title={template ? `${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal})` : '오프 (OFF)'}
     >
-      <span className="shift-code">{codeChar}</span>
-      {!isCompact && <span className="shift-label">{label}</span>}
+      <span className="code-text">{codeChar}</span>
+      {!isCompact && <span className="label-text">{label}</span>}
       {isPinned && (
-        <span className="shift-pin" title="고정(Pin) 배정">
-          <Pin size={10} strokeWidth={2.5} />
+        <span className="pin-badge" title="고정(Pin)">
+          <Pin size={9} strokeWidth={2.8} />
         </span>
       )}
 
       <style>{`
-        .shift-badge {
+        .shift-capsule {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 3px;
-          height: 26px;
-          padding: 0 8px;
+          gap: 4px;
+          height: 28px;
+          padding: 0 10px;
           border-width: 1px;
           border-style: solid;
-          border-radius: var(--radius-sm);
+          border-radius: var(--radius-full);
           font-size: var(--text-xs);
-          font-weight: 600;
+          font-weight: 700;
           line-height: 1;
-          letter-spacing: -0.01em;
           cursor: pointer;
           user-select: none;
-          transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+          transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
           font-feature-settings: "tnum";
         }
-        .shift-badge:hover {
-          filter: brightness(0.96);
+        .shift-capsule:hover {
+          filter: brightness(0.97);
           transform: translateY(-0.5px);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-        .shift-badge:active {
+        .shift-capsule:active {
           transform: translateY(0.5px);
         }
-        .shift-badge.compact {
-          height: 22px;
-          padding: 0 5px;
+        .shift-capsule.compact {
+          height: 24px;
+          padding: 0 7px;
           font-size: 11px;
-          border-radius: 3px;
+          border-radius: var(--radius-full);
+          min-width: 28px;
         }
-        .shift-code {
-          font-weight: 700;
+        .code-text {
+          font-weight: 800;
         }
-        .shift-label {
+        .label-text {
           font-size: 11px;
-          font-weight: 500;
+          font-weight: 600;
           opacity: 0.9;
         }
-        .shift-pin {
+        .pin-badge {
           display: inline-flex;
           align-items: center;
           color: currentColor;
-          opacity: 0.85;
+          opacity: 0.9;
           margin-left: 1px;
         }
-        .shift-badge.is-off {
-          font-weight: 500;
+        .shift-capsule.is-off {
+          font-weight: 700;
         }
       `}</style>
     </div>
