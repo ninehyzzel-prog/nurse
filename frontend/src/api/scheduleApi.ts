@@ -304,3 +304,66 @@ export function getExcelExportUrl(versionId: string): string {
 export function getCsvExportUrl(versionId: string): string {
   return `${API_BASE_URL}/schedule-versions/${versionId}/export/csv`;
 }
+
+export interface ApiStaffMember {
+  id: string;
+  display_name: string;
+  staff_code: string;
+  role: string;
+  active_status: string;
+  employment_type: string;
+  target_work_minutes: number;
+  can_work_night: boolean;
+  skill_tags: string[];
+}
+
+export async function fetchStaffList(wardId: string = "ward-obgyn"): Promise<ApiStaffMember[]> {
+  const res = await fetch(`${API_BASE_URL}/wards/${wardId}/staff`);
+  if (!res.ok) {
+    throw new Error("직원 목록 조회 실패");
+  }
+  return res.json();
+}
+
+export interface ApiTimeOffRequestItem {
+  id: string;
+  staff_id: string;
+  staff_name: string;
+  request_type: string;
+  status: string;
+  dates: string[];
+  is_important: boolean;
+  reason_note?: string;
+  submitted_at: string;
+  priority_points?: number;
+}
+
+export async function fetchTimeOffRequests(wardId: string = "ward-obgyn"): Promise<ApiTimeOffRequestItem[]> {
+  const res = await fetch(`${API_BASE_URL}/wards/${wardId}/time-off-requests`);
+  if (!res.ok) {
+    throw new Error("근무 신청 목록 조회 실패");
+  }
+  return res.json();
+}
+
+export async function createTimeOffRequest(
+  wardId: string = "ward-obgyn",
+  body: {
+    staff_id: string;
+    leave_type_code: string;
+    dates: string[];
+    is_important?: boolean;
+    reason_note?: string;
+  }
+): Promise<ApiTimeOffRequestItem> {
+  const res = await fetch(`${API_BASE_URL}/wards/${wardId}/time-off-requests`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "근무 신청 등록 실패");
+  }
+  return res.json();
+}

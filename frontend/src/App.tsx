@@ -35,6 +35,7 @@ export const App: React.FC = () => {
         {/* 작성자/수간호사 PC 전용 라우트 */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/roster/2026-11" replace />} />
+          <Route path="roster" element={<Navigate to="/admin/roster/2026-11" replace />} />
           <Route path="roster/:periodId" element={<RosterEditorPage />} />
           <Route path="requests/:periodId" element={<ConflictResolverPage />} />
           <Route path="auto-schedule/:periodId" element={<AutoSchedulePage />} />
