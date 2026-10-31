@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ShiftTemplate } from '../../types';
+import { Pin } from 'lucide-react';
 
 interface ShiftCellProps {
   template?: ShiftTemplate;
@@ -16,68 +17,88 @@ export const ShiftCell: React.FC<ShiftCellProps> = ({
   onClick,
   className = '',
 }) => {
-  if (!template || template.code === 'OFF') {
-    return (
-      <div
-        onClick={onClick}
-        className={`shift-cell off ${isCompact ? 'compact' : ''} ${className}`}
-        style={{
-          backgroundColor: 'var(--shift-off-bg)',
-          color: 'var(--shift-off-text)',
-          border: '1px solid var(--shift-off-border)',
-        }}
-      >
-        <span className="code">OFF</span>
-        {isPinned && <span className="pin-indicator">📌</span>}
-      </div>
-    );
-  }
-
-  const bgVar = `var(--${template.colorToken}-bg)`;
-  const textVar = `var(--${template.colorToken}-text)`;
-  const borderVar = `var(--${template.colorToken}-border)`;
+  const isOff = !template || template.code === 'OFF';
+  const colorToken = isOff ? 'shift-off' : template.colorToken;
+  const label = isOff ? 'OFF' : template.label;
+  const codeChar = isOff ? 'OFF' : template.code[0];
 
   return (
     <div
       onClick={onClick}
-      className={`shift-cell ${isCompact ? 'compact' : ''} ${className}`}
-      style={{
-        backgroundColor: bgVar,
-        color: textVar,
-        border: `1px solid ${borderVar}`,
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
       }}
-      title={`${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal}${template.endDayOffset ? ' 익일' : ''})`}
+      className={`shift-badge ${isOff ? 'is-off' : ''} ${isCompact ? 'compact' : ''} ${className}`}
+      style={{
+        backgroundColor: `var(--${colorToken}-bg)`,
+        color: `var(--${colorToken}-text)`,
+        borderColor: `var(--${colorToken}-border)`,
+      }}
+      title={template ? `${template.label} (${template.startsAtLocal} ~ ${template.endsAtLocal})` : '오프 (휴식)'}
     >
-      <span className="code">{template.code[0]}</span>
-      {!isCompact && <span className="label">{template.label}</span>}
-      {isPinned && <span className="pin-indicator" title="관리자 고정 배정">📌</span>}
+      <span className="shift-code">{codeChar}</span>
+      {!isCompact && <span className="shift-label">{label}</span>}
+      {isPinned && (
+        <span className="shift-pin" title="고정(Pin) 배정">
+          <Pin size={10} strokeWidth={2.5} />
+        </span>
+      )}
 
       <style>{`
-        .shift-cell {
+        .shift-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 4px;
-          padding: 4px 8px;
+          gap: 3px;
+          height: 26px;
+          padding: 0 8px;
+          border-width: 1px;
+          border-style: solid;
           border-radius: var(--radius-sm);
+          font-size: var(--text-xs);
           font-weight: 600;
-          font-size: var(--font-size-xs);
+          line-height: 1;
+          letter-spacing: -0.01em;
           cursor: pointer;
           user-select: none;
-          min-height: 28px;
-          transition: transform 0.1s ease, box-shadow 0.1s ease;
+          transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+          font-feature-settings: "tnum";
         }
-        .shift-cell:hover {
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-sm);
+        .shift-badge:hover {
+          filter: brightness(0.96);
+          transform: translateY(-0.5px);
         }
-        .shift-cell.compact {
-          padding: 2px 4px;
-          min-height: 22px;
+        .shift-badge:active {
+          transform: translateY(0.5px);
+        }
+        .shift-badge.compact {
+          height: 22px;
+          padding: 0 5px;
           font-size: 11px;
+          border-radius: 3px;
         }
-        .pin-indicator {
-          font-size: 10px;
+        .shift-code {
+          font-weight: 700;
+        }
+        .shift-label {
+          font-size: 11px;
+          font-weight: 500;
+          opacity: 0.9;
+        }
+        .shift-pin {
+          display: inline-flex;
+          align-items: center;
+          color: currentColor;
+          opacity: 0.85;
+          margin-left: 1px;
+        }
+        .shift-badge.is-off {
+          font-weight: 500;
         }
       `}</style>
     </div>

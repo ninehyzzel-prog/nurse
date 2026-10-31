@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { TimeOffType } from '../../types';
-import { Check, AlertCircle, Info, Send } from 'lucide-react';
+import { Check, Info } from 'lucide-react';
 
 export const NewRequestPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialDate = searchParams.get('date');
 
-  // 다중 날짜 선택 상태
   const [selectedDates, setSelectedDates] = useState<string[]>(
     initialDate ? [initialDate] : []
   );
@@ -34,353 +33,350 @@ export const NewRequestPage: React.FC = () => {
     setSubmitted(true);
     setTimeout(() => {
       navigate('/me/requests');
-    }, 1200);
+    }, 800);
   };
 
   return (
-    <div className="new-req-container">
-      <div className="page-header">
-        <h2 className="title">오프 / 휴가 신청</h2>
-        <span className="deadline-badge">11월 15일 24:00 마감</span>
-      </div>
-
-      <div className="step-card">
-        <div className="step-title">
-          <span className="step-num">1</span>
-          <h3>날짜를 선택하세요 (다중 선택 가능)</h3>
-        </div>
-        <p className="step-desc">원하시는 날짜를 터치하여 선택하거나 해제할 수 있습니다.</p>
-
-        {/* 미니 캘린더 */}
-        <div className="req-calendar">
-          {['일', '월', '화', '수', '목', '금', '토'].map((dow, idx) => (
-            <div key={dow} className={`dow ${idx === 0 ? 'sun' : idx === 6 ? 'sat' : ''}`}>
-              {dow}
-            </div>
-          ))}
-
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1;
-            const dateStr = `2026-11-${String(day).padStart(2, '0')}`;
-            const isSelected = selectedDates.includes(dateStr);
-            const dow = (startDayOfWeek + i) % 7;
-            const isWeekend = dow === 0 || dow === 6;
-
-            return (
-              <button
-                type="button"
-                key={day}
-                className={`date-btn ${isSelected ? 'selected' : ''} ${isWeekend ? 'weekend' : ''}`}
-                onClick={() => toggleDate(dateStr)}
-              >
-                <span className="d-num">{day}</span>
-                {isSelected && <Check size={14} className="check-icon" />}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="selected-summary">
-          선택된 일자: <strong>{selectedDates.length}일</strong>
-          {selectedDates.length > 0 && ` (${selectedDates.map((d) => d.split('-')[2] + '일').join(', ')})`}
+    <div className="new-req-view">
+      <div className="page-head">
+        <div>
+          <h2 className="page-title">오프 / 휴가 신청</h2>
+          <span className="deadline-text">11월 15일 24:00 마감</span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="step-card">
-        <div className="step-title">
-          <span className="step-num">2</span>
-          <h3>신청 유형 및 사유</h3>
+      {/* Date Picker Section */}
+      <div className="form-section">
+        <div className="section-label-row">
+          <span className="section-title">희망 일자 선택 (다중 선택)</span>
+          <span className="selected-count font-mono">선택: {selectedDates.length}일</span>
         </div>
 
-        <div className="type-selector">
-          <label className={`type-option ${requestType === 'PREFERENCE_OFF' ? 'active' : ''}`}>
+        <div className="mini-calendar">
+          <div className="cal-dow-row">
+            {['일', '월', '화', '수', '목', '금', '토'].map((dow, idx) => (
+              <div key={dow} className={`dow-label ${idx === 0 ? 'sun' : idx === 6 ? 'sat' : ''}`}>
+                {dow}
+              </div>
+            ))}
+          </div>
+
+          <div className="cal-days-grid">
+            {Array.from({ length: daysInMonth }).map((_, i) => {
+              const day = i + 1;
+              const dateStr = `2026-11-${String(day).padStart(2, '0')}`;
+              const isSelected = selectedDates.includes(dateStr);
+              const dow = (startDayOfWeek + i) % 7;
+              const isWeekend = dow === 0 || dow === 6;
+
+              return (
+                <button
+                  type="button"
+                  key={day}
+                  className={`date-cell-btn ${isSelected ? 'is-selected' : ''} ${isWeekend ? 'is-weekend' : ''}`}
+                  onClick={() => toggleDate(dateStr)}
+                >
+                  <span className="d-num font-mono">{day}</span>
+                  {isSelected && <Check size={11} strokeWidth={3} className="check-mark" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Type & Reason Form Section */}
+      <form onSubmit={handleSubmit} className="form-section">
+        <span className="section-title">신청 유형 선택</span>
+
+        <div className="type-options-stack">
+          <label className={`type-box ${requestType === 'PREFERENCE_OFF' ? 'is-active' : ''}`}>
             <input
               type="radio"
               name="type"
               checked={requestType === 'PREFERENCE_OFF'}
               onChange={() => setRequestType('PREFERENCE_OFF')}
             />
-            <div className="opt-content">
-              <strong>일반 희망 OFF</strong>
-              <span>스케줄 편성 시 경합 점수에 따라 우선순위가 반영됩니다.</span>
+            <div className="type-info">
+              <span className="type-name">일반 희망 OFF</span>
+              <span className="type-hint">편성 시 경합 점수(QA-SCORE-02)에 따라 우선순위가 반영됩니다.</span>
             </div>
           </label>
 
-          <label className={`type-option ${requestType === 'ANNUAL_LEAVE' ? 'active' : ''}`}>
+          <label className={`type-box ${requestType === 'ANNUAL_LEAVE' ? 'is-active' : ''}`}>
             <input
               type="radio"
               name="type"
               checked={requestType === 'ANNUAL_LEAVE'}
               onChange={() => setRequestType('ANNUAL_LEAVE')}
             />
-            <div className="opt-content">
-              <strong>법정 연차 휴가</strong>
-              <span>권리 보장 휴가로, 점수 경합 대상이 아니며 벌점이 부과되지 않습니다.</span>
+            <div className="type-info">
+              <span className="type-name">법정 연차 휴가</span>
+              <span className="type-hint">권리 보장 휴가로 점수 경합 대상이 아니며 결손 점수가 발생하지 않습니다.</span>
             </div>
           </label>
 
-          <label className={`type-option ${requestType === 'PROTECTED_LEAVE' ? 'active' : ''}`}>
+          <label className={`type-box ${requestType === 'PROTECTED_LEAVE' ? 'is-active' : ''}`}>
             <input
               type="radio"
               name="type"
               checked={requestType === 'PROTECTED_LEAVE'}
               onChange={() => setRequestType('PROTECTED_LEAVE')}
             />
-            <div className="opt-content">
-              <strong>모성보호 / 법정보호 휴가</strong>
-              <span>법령에 의해 보호되며, 상세 사유는 수집되지 않습니다.</span>
+            <div className="type-info">
+              <span className="type-name">모성보호 / 법정보호 휴가</span>
+              <span className="type-hint">법령에 의해 보호되며, 상세 사유는 수집되지 않습니다.</span>
             </div>
           </label>
         </div>
 
         {requestType === 'PREFERENCE_OFF' && (
-          <div className="important-box">
-            <label className="checkbox-row">
+          <div className="important-toggle-strip">
+            <label className="checkbox-control">
               <input
                 type="checkbox"
                 checked={isImportant}
                 onChange={(e) => setIsImportant(e.target.checked)}
               />
-              <span className="chk-label">중요 희망으로 지정 (+10점 가산)</span>
+              <span className="cb-label">중요 희망 오프로 지정 (+10점 가산)</span>
             </label>
-            <p className="chk-hint">
-              <Info size={14} /> 월 최대 1회만 지정 가능하며, 꼭 필요한 사정이 있을 때 사용하세요.
-            </p>
+            <span className="cb-desc">
+              <Info size={12} /> 연 3회 한도이며 꼭 필요한 사정이 있을 때 가산됩니다.
+            </span>
           </div>
         )}
 
-        <div className="form-group">
-          <label className="input-label">신청 사유 (선택 사항)</label>
-          <input
-            type="text"
-            className="text-input"
-            placeholder="사유를 입력하지 않아도 신청 가능합니다."
+        <div className="reason-field">
+          <label className="field-label">신청 사유 (선택 입력)</label>
+          <textarea
+            rows={2}
+            placeholder="수간호사 및 팀장 참고용 메모를 남겨주세요."
             value={reason}
             onChange={(e) => setReason(e.target.value)}
+            className="text-input"
           />
-          <span className="privacy-note">
-            <AlertCircle size={12} /> 동료 간호사에게는 사유가 일체 공개되지 않습니다.
-          </span>
         </div>
 
-        <div className="sticky-footer">
-          <button
-            type="submit"
-            className="submit-cta"
-            disabled={selectedDates.length === 0 || submitted}
-          >
-            <Send size={18} />
-            <span>{submitted ? '접수 완료! 이동 중...' : `${selectedDates.length}일 오프 신청 접수하기`}</span>
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="btn-submit"
+          disabled={selectedDates.length === 0 || submitted}
+        >
+          {submitted ? '신청서 제출 완료...' : `선택한 ${selectedDates.length}일 신청서 제출`}
+        </button>
       </form>
 
       <style>{`
-        .new-req-container {
-          padding: var(--space-4);
+        .new-req-view {
           display: flex;
           flex-direction: column;
-          gap: var(--space-4);
+          padding: var(--space-3);
+          gap: var(--space-3);
         }
-        .page-header {
+
+        .page-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 2px;
+        }
+        .page-title {
+          font-size: var(--text-md);
+          font-weight: 700;
+          color: var(--color-text-primary);
+          margin: 0;
+        }
+        .deadline-text {
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+
+        /* Form Section */
+        .form-section {
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          padding: var(--space-3);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-2-5);
+        }
+        .section-label-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
-        .title {
-          font-size: var(--font-size-lg);
-          font-weight: 700;
+        .section-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-primary);
         }
-        .deadline-badge {
+        .selected-count {
           font-size: 11px;
           font-weight: 600;
-          color: var(--color-danger);
-          background-color: var(--color-danger-bg);
-          padding: 2px 8px;
-          border-radius: var(--radius-full);
+          color: #2563EB;
         }
-        .step-card {
-          background-color: var(--color-bg-surface);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-4);
-          box-shadow: var(--shadow-sm);
+
+        /* Mini Calendar */
+        .mini-calendar {
+          border: 1px solid var(--color-border-subtle);
+          border-radius: var(--radius-xs);
+          overflow: hidden;
         }
-        .step-title {
-          display: flex;
-          align-items: center;
-          gap: var(--space-2);
-          margin-bottom: 4px;
-        }
-        .step-num {
-          width: 22px;
-          height: 22px;
-          border-radius: var(--radius-full);
-          background-color: var(--color-brand-primary);
-          color: white;
-          font-size: 12px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .step-title h3 {
-          font-size: var(--font-size-base);
-          font-weight: 700;
-        }
-        .step-desc {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
-          margin-bottom: var(--space-3);
-        }
-        .req-calendar {
+        .cal-dow-row {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
-          gap: 4px;
-          margin-bottom: var(--space-3);
+          background-color: var(--color-bg-subtle);
+          border-bottom: 1px solid var(--color-border-subtle);
         }
-        .dow {
+        .dow-label {
           text-align: center;
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--color-text-secondary);
           padding: 4px 0;
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--color-text-muted);
         }
-        .dow.sun { color: var(--color-danger); }
-        .dow.sat { color: var(--color-brand-primary); }
-        .date-btn {
-          min-height: 44px;
-          background-color: var(--color-bg-muted);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-sm);
+        .dow-label.sun { color: #DC2626; }
+        .dow-label.sat { color: #2563EB; }
+
+        .cal-days-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+        }
+        .date-cell-btn {
+          min-height: 40px;
+          border-right: 1px solid var(--color-border-subtle);
+          border-bottom: 1px solid var(--color-border-subtle);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 2px;
+          gap: 1px;
+          background: none;
           cursor: pointer;
-          transition: background-color 0.1s, border-color 0.1s;
+          transition: background-color 0.1s;
         }
-        .date-btn.weekend {
-          background-color: #F8FAFC;
+        .date-cell-btn:hover {
+          background-color: #FAFAFA;
         }
-        .date-btn.selected {
-          background-color: var(--color-brand-light);
-          border-color: var(--color-brand-primary);
-          color: var(--color-brand-primary);
-          font-weight: 700;
+        .date-cell-btn.is-selected {
+          background-color: #0F172A;
+          color: #FFFFFF;
         }
-        .check-icon {
-          color: var(--color-brand-primary);
+        .date-cell-btn.is-weekend:not(.is-selected) {
+          background-color: #FCFDFE;
         }
-        .selected-summary {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
-          padding-top: var(--space-2);
-          border-top: 1px dashed var(--color-border);
+        .d-num {
+          font-size: 12px;
+          font-weight: 600;
         }
-        .type-selector {
+        .check-mark {
+          color: #FFFFFF;
+        }
+        .font-mono {
+          font-feature-settings: "tnum";
+        }
+
+        /* Type Stack */
+        .type-options-stack {
           display: flex;
           flex-direction: column;
-          gap: var(--space-2);
-          margin-bottom: var(--space-4);
+          gap: 6px;
         }
-        .type-option {
+        .type-box {
           display: flex;
           align-items: flex-start;
-          gap: var(--space-3);
-          padding: var(--space-3);
+          gap: 8px;
+          padding: 8px var(--space-2-5);
           border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
+          border-radius: var(--radius-sm);
           cursor: pointer;
+          transition: border-color 0.1s, background-color 0.1s;
         }
-        .type-option.active {
-          border-color: var(--color-brand-primary);
-          background-color: var(--color-brand-light);
+        .type-box.is-active {
+          border-color: #2563EB;
+          background-color: #F8FAFC;
         }
-        .opt-content {
+        .type-info {
+          display: flex;
+          flex-direction: column;
+          gap: 1px;
+        }
+        .type-name {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+        }
+        .type-hint {
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.3;
+        }
+
+        /* Important Strip */
+        .important-toggle-strip {
+          padding: 8px var(--space-2-5);
+          background-color: #FFFBEB;
+          border: 1px solid #FDE68A;
+          border-radius: var(--radius-xs);
           display: flex;
           flex-direction: column;
           gap: 2px;
         }
-        .opt-content strong {
-          font-size: var(--font-size-sm);
-        }
-        .opt-content span {
-          font-size: 11px;
-          color: var(--color-text-secondary);
-        }
-        .important-box {
-          background-color: var(--color-warning-bg);
-          border: 1px solid #FDE68A;
-          border-radius: var(--radius-md);
-          padding: var(--space-3);
-          margin-bottom: var(--space-4);
-        }
-        .checkbox-row {
+        .checkbox-control {
           display: flex;
           align-items: center;
-          gap: var(--space-2);
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #92400E;
           cursor: pointer;
         }
-        .chk-label {
-          font-size: var(--font-size-sm);
-          font-weight: 700;
-          color: var(--color-warning);
-        }
-        .chk-hint {
+        .cb-desc {
           display: flex;
           align-items: center;
           gap: 4px;
-          font-size: 11px;
-          color: #92400E;
-          margin-top: 4px;
+          font-size: 10px;
+          color: #B45309;
         }
-        .form-group {
+
+        /* Reason Field */
+        .reason-field {
           display: flex;
           flex-direction: column;
-          gap: var(--space-1);
-          margin-bottom: var(--space-4);
+          gap: 4px;
         }
-        .input-label {
-          font-size: var(--font-size-xs);
+        .field-label {
+          font-size: 11px;
           font-weight: 600;
           color: var(--color-text-secondary);
         }
         .text-input {
-          padding: 10px 12px;
+          padding: 6px 8px;
           border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
-          font-size: var(--font-size-sm);
+          font-size: 12px;
+          resize: none;
         }
-        .privacy-note {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 11px;
-          color: var(--color-text-muted);
+        .text-input:focus {
+          border-color: #2563EB;
+          outline: none;
         }
-        .sticky-footer {
-          margin-top: var(--space-4);
+
+        .btn-submit {
+          height: 38px;
+          background-color: var(--color-primary);
+          color: var(--color-primary-text);
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 600;
+          transition: background-color 0.12s;
         }
-        .submit-cta {
-          width: 100%;
-          min-height: var(--min-touch-target);
-          background-color: var(--color-brand-primary);
-          color: white;
-          border: none;
-          border-radius: var(--radius-md);
-          font-weight: 700;
-          font-size: var(--font-size-sm);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--space-2);
-          cursor: pointer;
+        .btn-submit:hover:not(:disabled) {
+          background-color: var(--color-primary-hover);
         }
-        .submit-cta:disabled {
-          background-color: var(--color-border);
-          color: var(--color-text-muted);
+        .btn-submit:disabled {
+          opacity: 0.5;
           cursor: not-allowed;
         }
       `}</style>

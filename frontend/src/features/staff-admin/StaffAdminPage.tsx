@@ -4,9 +4,8 @@ import type { Staff } from '../../types';
 import { 
   UserPlus, 
   Upload, 
-  ShieldAlert, 
-  Check, 
-  X
+  X,
+  Users
 } from 'lucide-react';
 
 export const StaffAdminPage: React.FC = () => {
@@ -47,194 +46,255 @@ export const StaffAdminPage: React.FC = () => {
   };
 
   return (
-    <div className="staff-container">
-      <div className="staff-header">
+    <div className="staff-view">
+      {/* Page Header */}
+      <div className="view-header">
         <div>
-          <h2 className="title">병동 인력 및 자격 관리</h2>
-          <span className="desc">
+          <h2 className="view-title">병동 인력 및 자격 관리</h2>
+          <span className="view-desc">
             간호사별 고용 형태, 목표 근로시간, 야간 가능 여부 및 필수 역량 태그를 관리합니다.
           </span>
         </div>
 
-        <div className="btn-group">
-          <button className="btn-csv" title="CSV 일괄 등록">
-            <Upload size={16} />
-            <span>CSV 일괄 가져오기</span>
+        <div className="header-actions">
+          <button className="btn-secondary" title="CSV 일괄 등록">
+            <Upload size={13} />
+            <span>CSV 일괄 등록</span>
           </button>
-          <button className="btn-add" onClick={() => setShowWizard(true)}>
-            <UserPlus size={16} />
-            <span>신규 직원 등록 마법사</span>
+          <button className="btn-primary" onClick={() => setShowWizard(true)}>
+            <UserPlus size={13} />
+            <span>신규 간호사 등록</span>
           </button>
         </div>
       </div>
 
-      {/* 개인정보 보호 안내 */}
-      <div className="privacy-alert">
-        <ShieldAlert size={18} color="var(--color-brand-primary)" />
-        <span>
-          <strong>개인정보 최소 수집 원칙 준수:</strong> 본 시스템은 주민등록번호, 민감한 개인 건강정보, 환자 정보를 일체 수집·저장하지 않습니다. 사번 대체 식별자를 사용합니다.
-        </span>
-      </div>
+      {/* Staff Table Panel */}
+      <div className="table-panel">
+        <div className="panel-toolbar">
+          <div className="toolbar-info">
+            <Users size={14} />
+            <span className="info-title">등록 간호사 목록 (총 {staffList.length}명)</span>
+          </div>
+          <span className="info-desc">산부인과 병동 정규/교대/단시간 배정 대상</span>
+        </div>
 
-      {/* 직원 테이블 */}
-      <div className="table-card">
-        <table className="staff-table">
-          <thead>
-            <tr>
-              <th>식별코드</th>
-              <th>성명</th>
-              <th>고용 형태</th>
-              <th>월 목표 근로시간</th>
-              <th>야간 근무</th>
-              <th>보유 역량 태그</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            {staffList.map((s) => (
-              <tr key={s.id}>
-                <td><code>{s.staffCode}</code></td>
-                <td><strong>{s.name}</strong></td>
-                <td>
-                  <span className="type-pill">
-                    {s.employmentType === 'FULL_TIME'
-                      ? '정규 상근'
-                      : s.employmentType === 'SHIFT'
-                      ? '교대 근무'
-                      : '단시간 근무'}
-                  </span>
-                </td>
-                <td>{s.targetWorkMinutes / 60}시간 ({s.targetWorkMinutes}분)</td>
-                <td>
-                  {s.canWorkNight ? (
-                    <span className="night-yes">✓ 야간 가능</span>
-                  ) : (
-                    <span className="night-no">✕ 야간 제외</span>
-                  )}
-                </td>
-                <td>
-                  <div className="tag-list">
-                    {s.skillTags.length === 0 && <span className="no-tag">-</span>}
-                    {s.skillTags.map((tag) => (
-                      <span key={tag} className="tag-chip">
-                        {tag === 'CHARGE_CAPABLE' ? '책임간호사' : tag === 'DELIVERY_ROOM' ? '분만실대응' : '신규간호사'}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td>
-                  <span className="status-active">재직 중</span>
-                </td>
+        <div className="table-scroll">
+          <table className="staff-table">
+            <thead>
+              <tr>
+                <th>사번</th>
+                <th>성명</th>
+                <th>직무</th>
+                <th>고용 형태</th>
+                <th>목표 근로시간</th>
+                <th>야간 근무</th>
+                <th>보유 역량 태그</th>
+                <th>재직 상태</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {staffList.map((s) => (
+                <tr key={s.id}>
+                  <td className="font-mono text-muted">{s.staffCode}</td>
+                  <td className="font-semibold">{s.name}</td>
+                  <td>{s.skillTags.includes('CHARGE_CAPABLE') ? '책임간호사' : '일반간호사'}</td>
+                  <td>
+                    <span className="type-badge">
+                      {s.employmentType === 'FULL_TIME' && '상근정규'}
+                      {s.employmentType === 'SHIFT' && '교대정규'}
+                      {s.employmentType === 'PART_TIME' && '단시간 (시간제)'}
+                    </span>
+                  </td>
+                  <td className="font-mono">
+                    {Math.round(s.targetWorkMinutes / 60)}시간 / 월
+                  </td>
+                  <td>
+                    {s.canWorkNight ? (
+                      <span className="night-badge ok">야간 가능</span>
+                    ) : (
+                      <span className="night-badge exempt">야간 면제 (임산부/단시간)</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="tag-list">
+                      {s.skillTags.map((tag) => (
+                        <span key={tag} className={`skill-pill ${tag.toLowerCase()}`}>
+                          {tag === 'CHARGE_CAPABLE' && '책임간호'}
+                          {tag === 'DELIVERY_ROOM' && '분만실숙련'}
+                          {tag === 'NEW_GRAD' && '신규(수련)'}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="active-dot">● 재직중</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* 4단계 등록 마법사 모달 */}
+      {/* 4-Step Registration Modal */}
       {showWizard && (
         <div className="modal-overlay" onClick={() => setShowWizard(false)}>
-          <div className="wizard-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>간호사 등록 마법사 (단계 {wizardStep} / 4)</h3>
-              <button className="close-btn" onClick={() => setShowWizard(false)}><X size={20} /></button>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <span className="modal-title">신규 간호사 등록 마법사</span>
+              <button className="modal-close" onClick={() => setShowWizard(false)}>
+                <X size={16} />
+              </button>
             </div>
 
-            <div className="wizard-body">
+            {/* Stepper Strip */}
+            <div className="stepper-strip">
+              <div className={`step-node ${wizardStep >= 1 ? 'active' : ''}`}>1. 기본정보</div>
+              <div className="step-arrow">→</div>
+              <div className={`step-node ${wizardStep >= 2 ? 'active' : ''}`}>2. 고용형태</div>
+              <div className="step-arrow">→</div>
+              <div className={`step-node ${wizardStep >= 3 ? 'active' : ''}`}>3. 야간가능여부</div>
+              <div className="step-arrow">→</div>
+              <div className={`step-node ${wizardStep >= 4 ? 'active' : ''}`}>4. 역량태그</div>
+            </div>
+
+            {/* Step Body */}
+            <div className="modal-body">
               {wizardStep === 1 && (
-                <div className="wizard-step">
-                  <h4>1단계: 기본 정보 입력</h4>
-                  <div className="field">
-                    <label>표시 이름 (가명/직급 권장):</label>
+                <div className="step-content">
+                  <div className="form-group">
+                    <label>간호사 성명 *</label>
                     <input
                       type="text"
                       placeholder="예: 최간호사"
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
+                      className="form-input"
                     />
                   </div>
-                  <div className="field">
-                    <label>사번 대체 식별자:</label>
+                  <div className="form-group">
+                    <label>원내 사번</label>
                     <input
                       type="text"
                       placeholder="예: RN-007"
                       value={newCode}
                       onChange={(e) => setNewCode(e.target.value)}
+                      className="form-input"
                     />
                   </div>
                 </div>
               )}
 
               {wizardStep === 2 && (
-                <div className="wizard-step">
-                  <h4>2단계: 근무 형태 및 근로시간</h4>
-                  <div className="field">
-                    <label>고용 형태:</label>
-                    <select value={newType} onChange={(e) => setNewType(e.target.value as any)}>
-                      <option value="FULL_TIME">정규 교대근무 (월 160시간)</option>
-                      <option value="PART_TIME">단시간 근무 (월 80시간)</option>
-                    </select>
-                  </div>
-                  <div className="field">
-                    <label className="chk-label">
+                <div className="step-content">
+                  <label className="form-label">고용 형태 및 목표 근로시간</label>
+                  <div className="option-grid">
+                    <label className={`option-card ${newType === 'FULL_TIME' ? 'selected' : ''}`}>
                       <input
-                        type="checkbox"
-                        checked={canNight}
-                        onChange={(e) => setCanNight(e.target.checked)}
+                        type="radio"
+                        name="empType"
+                        checked={newType === 'FULL_TIME'}
+                        onChange={() => setNewType('FULL_TIME')}
                       />
-                      <span>야간(Night) 근무 배정 가능 여부</span>
+                      <div>
+                        <strong>전일제 정규직</strong>
+                        <p>월 160시간 기준</p>
+                      </div>
+                    </label>
+                    <label className={`option-card ${newType === 'SHIFT' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="empType"
+                        checked={newType === 'SHIFT'}
+                        onChange={() => setNewType('SHIFT')}
+                      />
+                      <div>
+                        <strong>교대제 정규직</strong>
+                        <p>월 160시간 (D/N 교대)</p>
+                      </div>
+                    </label>
+                    <label className={`option-card ${newType === 'PART_TIME' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="empType"
+                        checked={newType === 'PART_TIME'}
+                        onChange={() => setNewType('PART_TIME')}
+                      />
+                      <div>
+                        <strong>단시간 근로 (시간제)</strong>
+                        <p>월 80시간 (주 20시간 상한)</p>
+                      </div>
                     </label>
                   </div>
                 </div>
               )}
 
               {wizardStep === 3 && (
-                <div className="wizard-step">
-                  <h4>3단계: 자격 및 필수 역량 태그</h4>
-                  <div className="skill-selector">
-                    {['CHARGE_CAPABLE', 'DELIVERY_ROOM', 'NEW_GRAD'].map((t) => (
-                      <label key={t} className="skill-chk">
-                        <input
-                          type="checkbox"
-                          checked={skills.includes(t)}
-                          onChange={() => toggleSkill(t)}
-                        />
-                        <span>{t === 'CHARGE_CAPABLE' ? '책임간호사 가능' : t === 'DELIVERY_ROOM' ? '분만실 대응' : '신규 교육 대상'}</span>
-                      </label>
-                    ))}
+                <div className="step-content">
+                  <label className="form-label">야간(Night) 근무 배정 가능 여부</label>
+                  <p className="form-hint">
+                    임산부, 수유부, 육아기 단시간 근로자 및 의학적 면제자는 legal_floor 원칙에 의해 야간 근무가 법적으로 차단됩니다.
+                  </p>
+                  <div className="toggle-box">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={canNight}
+                        onChange={(e) => setCanNight(e.target.checked)}
+                      />
+                      <span>야간 근무(NIGHT) 배정 가능</span>
+                    </label>
                   </div>
                 </div>
               )}
 
               {wizardStep === 4 && (
-                <div className="wizard-step">
-                  <h4>4단계: 입력 내용 최종 확인</h4>
-                  <div className="confirm-box">
-                    <div>성명: <strong>{newName}</strong> ({newCode})</div>
-                    <div>형태: <strong>{newType}</strong>, 야간 가능: <strong>{canNight ? '예' : '아니오'}</strong></div>
-                    <div>보유 역량: <strong>{skills.join(', ') || '없음'}</strong></div>
+                <div className="step-content">
+                  <label className="form-label">보유 필수 역량 태그 선택</label>
+                  <div className="skill-grid">
+                    <label className={`skill-select-card ${skills.includes('CHARGE_CAPABLE') ? 'checked' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={skills.includes('CHARGE_CAPABLE')}
+                        onChange={() => toggleSkill('CHARGE_CAPABLE')}
+                      />
+                      <span>책임간호 (Charge Capable)</span>
+                    </label>
+                    <label className={`skill-select-card ${skills.includes('DELIVERY_ROOM') ? 'checked' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={skills.includes('DELIVERY_ROOM')}
+                        onChange={() => toggleSkill('DELIVERY_ROOM')}
+                      />
+                      <span>분만실 분만대응 (Delivery Room)</span>
+                    </label>
+                    <label className={`skill-select-card ${skills.includes('NEW_GRAD') ? 'checked' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={skills.includes('NEW_GRAD')}
+                        onChange={() => toggleSkill('NEW_GRAD')}
+                      />
+                      <span>신규/수련 (단독 Night 배정 지양)</span>
+                    </label>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="modal-footer">
+            {/* Modal Footer Controls */}
+            <div className="modal-foot">
               {wizardStep > 1 && (
-                <button className="btn-prev" onClick={() => setWizardStep(wizardStep - 1)}>
+                <button className="btn-secondary" onClick={() => setWizardStep(wizardStep - 1)}>
                   이전
                 </button>
               )}
               {wizardStep < 4 ? (
-                <button
-                  className="btn-next"
-                  onClick={() => setWizardStep(wizardStep + 1)}
-                  disabled={wizardStep === 1 && !newName}
-                >
+                <button className="btn-primary ml-auto" onClick={() => setWizardStep(wizardStep + 1)}>
                   다음 단계
                 </button>
               ) : (
-                <button className="btn-complete" onClick={handleAddStaff}>
-                  <Check size={16} /> 등록 완료
+                <button className="btn-primary ml-auto" onClick={handleAddStaff}>
+                  간호사 등록 완료
                 </button>
               )}
             </div>
@@ -243,198 +303,333 @@ export const StaffAdminPage: React.FC = () => {
       )}
 
       <style>{`
-        .staff-container {
+        .staff-view {
           display: flex;
           flex-direction: column;
           gap: var(--space-4);
         }
-        .staff-header {
+
+        .view-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: var(--color-bg-surface);
-          padding: var(--space-4);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
         }
-        .title {
-          font-size: var(--font-size-base);
+        .view-title {
+          font-size: var(--text-lg);
           font-weight: 700;
+          color: var(--color-text-primary);
+          margin: 0;
         }
-        .desc {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
+        .view-desc {
+          font-size: var(--text-xs);
+          color: var(--color-text-muted);
         }
-        .btn-group {
+        .header-actions {
           display: flex;
           align-items: center;
           gap: var(--space-2);
         }
-        .btn-csv {
-          display: flex;
+
+        .btn-secondary {
+          display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 8px 12px;
-          background-color: var(--color-bg-muted);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
-          font-weight: 600;
-          cursor: pointer;
-        }
-        .btn-add {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          background-color: var(--color-brand-primary);
-          color: white;
-          border: none;
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
-          font-weight: 700;
-          cursor: pointer;
-        }
-        .privacy-alert {
-          background-color: var(--color-brand-light);
-          border: 1px solid #BAE6FD;
-          border-radius: var(--radius-md);
-          padding: var(--space-3) var(--space-4);
-          display: flex;
-          align-items: center;
-          gap: var(--space-3);
-          font-size: var(--font-size-xs);
-          color: #0369A1;
-        }
-        .table-card {
+          gap: 5px;
+          height: 28px;
+          padding: 0 10px;
           background-color: var(--color-bg-surface);
           border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--color-text-secondary);
+        }
+        .btn-secondary:hover {
+          background-color: var(--color-bg-subtle);
+          color: var(--color-text-primary);
+        }
+        .btn-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 28px;
+          padding: 0 10px;
+          background-color: var(--color-primary);
+          color: var(--color-primary-text);
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 600;
+        }
+        .btn-primary:hover {
+          background-color: var(--color-primary-hover);
+        }
+
+        /* Table Panel */
+        .table-panel {
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
           overflow: hidden;
+        }
+        .panel-toolbar {
+          padding: 8px var(--space-3);
+          background-color: var(--color-bg-subtle);
+          border-bottom: 1px solid var(--color-border);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .toolbar-info {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+        }
+        .info-desc {
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+
+        .table-scroll {
+          overflow-x: auto;
         }
         .staff-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: var(--font-size-xs);
-        }
-        .staff-table th, .staff-table td {
-          padding: 10px 14px;
-          border-bottom: 1px solid var(--color-border);
-          text-align: left;
+          font-size: 12px;
         }
         .staff-table th {
-          background-color: var(--color-bg-muted);
-          font-weight: 700;
+          background-color: #FAFAFA;
+          padding: 7px 12px;
+          text-align: left;
+          font-weight: 600;
+          font-size: 11px;
           color: var(--color-text-secondary);
+          border-bottom: 1px solid var(--color-border);
         }
-        .type-pill {
-          background-color: var(--color-bg-muted);
-          padding: 2px 6px;
-          border-radius: var(--radius-sm);
+        .staff-table td {
+          padding: 8px 12px;
+          border-bottom: 1px solid var(--color-border-subtle);
+          color: var(--color-text-primary);
+        }
+        .staff-table tr:hover td {
+          background-color: #FAFAFA;
+        }
+
+        .font-mono {
+          font-feature-settings: "tnum";
           font-size: 11px;
         }
-        .night-yes { color: var(--color-success); font-weight: 600; }
-        .night-no { color: var(--color-text-muted); }
-        .tag-list { display: flex; gap: 4px; }
-        .tag-chip {
-          background-color: #FEF3C7;
-          color: #B45309;
-          padding: 2px 6px;
-          border-radius: 2px;
-          font-size: 10px;
-          font-weight: 700;
-        }
-        .no-tag { color: var(--color-text-muted); }
-        .status-active {
-          color: var(--color-success);
+        .font-semibold {
           font-weight: 600;
+        }
+        .text-muted {
+          color: var(--color-text-muted);
+        }
+        .type-badge {
+          font-size: 11px;
+          color: var(--color-text-secondary);
+        }
+        .night-badge {
+          font-size: 10px;
+          font-weight: 600;
+          padding: 1px 5px;
+          border-radius: 2px;
+        }
+        .night-badge.ok {
+          background-color: #ECFDF5;
+          color: #047857;
+        }
+        .night-badge.exempt {
+          background-color: #FEF2F2;
+          color: #B91C1C;
+        }
+
+        .tag-list {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .skill-pill {
+          font-size: 10px;
+          padding: 1px 4px;
+          border-radius: 2px;
+          font-weight: 600;
+        }
+        .skill-pill.charge_capable { background-color: #EEF2FF; color: #4338CA; }
+        .skill-pill.delivery_room { background-color: #ECFDF5; color: #047857; }
+        .skill-pill.new_grad { background-color: #FEF3C7; color: #B45309; }
+        .active-dot {
+          font-size: 11px;
+          color: #15803D;
         }
 
         /* Modal */
         .modal-overlay {
           position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(15, 23, 42, 0.4);
+          inset: 0;
+          background-color: rgba(15, 23, 42, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1000;
           backdrop-filter: blur(2px);
         }
-        .wizard-modal {
-          background: white;
-          width: 480px;
-          border-radius: var(--radius-lg);
-          padding: var(--space-4);
-          box-shadow: var(--shadow-lg);
+        .modal-card {
+          width: 100%;
+          max-width: 460px;
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          box-shadow: var(--shadow-md);
+          overflow: hidden;
         }
-        .modal-header {
+        .modal-head {
+          height: 40px;
+          padding: 0 var(--space-4);
+          background-color: var(--color-bg-subtle);
+          border-bottom: 1px solid var(--color-border);
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px solid var(--color-border);
-          padding-bottom: var(--space-2);
-          margin-bottom: var(--space-3);
         }
-        .close-btn { background: none; border: none; cursor: pointer; }
-        .wizard-step {
+        .modal-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-text-primary);
+        }
+        .modal-close {
+          color: var(--color-text-muted);
+        }
+
+        .stepper-strip {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px var(--space-4);
+          background-color: #FAFAFA;
+          border-bottom: 1px solid var(--color-border-subtle);
+          font-size: 11px;
+        }
+        .step-node {
+          color: var(--color-text-muted);
+        }
+        .step-node.active {
+          color: var(--color-primary);
+          font-weight: 600;
+        }
+        .step-arrow {
+          color: var(--color-text-subtle);
+        }
+
+        .modal-body {
+          padding: var(--space-4);
+        }
+        .step-content {
           display: flex;
           flex-direction: column;
           gap: var(--space-3);
         }
-        .field {
+        .form-group {
           display: flex;
           flex-direction: column;
           gap: 4px;
         }
-        .field input, .field select {
-          padding: 8px;
+        .form-group label, .form-label {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-secondary);
+        }
+        .form-hint {
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.4;
+          margin: 0;
+        }
+        .form-input {
+          height: 32px;
+          padding: 0 var(--space-2-5);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
+          font-size: 12px;
         }
-        .skill-selector {
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-2);
+        .form-input:focus {
+          border-color: #2563EB;
+          outline: none;
         }
-        .skill-chk {
-          display: flex;
-          align-items: center;
-          gap: var(--space-2);
-          font-size: var(--font-size-sm);
-        }
-        .confirm-box {
-          background-color: var(--color-bg-muted);
-          padding: var(--space-3);
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
+
+        .option-grid {
           display: flex;
           flex-direction: column;
           gap: 6px;
         }
-        .modal-footer {
+        .option-card {
           display: flex;
-          justify-content: flex-end;
-          gap: var(--space-2);
-          margin-top: var(--space-4);
-          padding-top: var(--space-3);
-          border-top: 1px solid var(--color-border);
-        }
-        .btn-prev {
-          padding: 6px 12px;
-          background: var(--color-bg-muted);
+          align-items: center;
+          gap: 8px;
+          padding: 8px var(--space-3);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
           cursor: pointer;
         }
-        .btn-next, .btn-complete {
-          padding: 6px 16px;
-          background: var(--color-brand-primary);
-          color: white;
-          border: none;
+        .option-card.selected {
+          border-color: #2563EB;
+          background-color: #EFF6FF;
+        }
+        .option-card strong {
+          display: block;
+          font-size: 12px;
+        }
+        .option-card p {
+          font-size: 11px;
+          color: var(--color-text-muted);
+          margin: 0;
+        }
+
+        .toggle-box {
+          padding: 10px;
+          border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
-          font-weight: 700;
+        }
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
           cursor: pointer;
+        }
+
+        .skill-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .skill-select-card {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px var(--space-3);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          cursor: pointer;
+        }
+        .skill-select-card.checked {
+          border-color: #2563EB;
+          background-color: #EFF6FF;
+        }
+
+        .modal-foot {
+          padding: var(--space-3) var(--space-4);
+          background-color: var(--color-bg-subtle);
+          border-top: 1px solid var(--color-border);
+          display: flex;
+          align-items: center;
+        }
+        .ml-auto {
+          margin-left: auto;
         }
       `}</style>
     </div>

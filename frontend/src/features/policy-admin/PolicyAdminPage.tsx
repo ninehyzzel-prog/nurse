@@ -3,11 +3,20 @@ import { MOCK_SHIFT_TEMPLATES, MOCK_POLICY_V1 } from '../../data/mockData';
 import type { ShiftTemplate, PolicyVersion } from '../../types';
 import { ShiftCell } from '../../components/ui/ShiftCell';
 import { 
-  ShieldCheck, 
   Plus, 
   CheckCircle2, 
-  FileText
+  Clock,
+  SlidersHorizontal
 } from 'lucide-react';
+
+const DOMAIN_RULES_LIST = [
+  { id: 'rule-rest', ruleType: 'H-REST', hardSoft: 'HARD', parameter: '660분 (11시간)', justification: '근무 종료 후 다음 근무 시작 전 최소 11시간 휴식 보장', legalFloor: true },
+  { id: 'rule-week', ruleType: 'H-WEEK', hardSoft: 'HARD', parameter: '3120분 (52시간)', justification: '7일 rolling 실근로시간 상한 (법정 주 52시간)', legalFloor: true },
+  { id: 'rule-consec', ruleType: 'H-CONSEC', hardSoft: 'HARD', parameter: '5일', justification: '최대 연속 근무일 5일 초과 배정 금지', legalFloor: false },
+  { id: 'rule-night-cap', ruleType: 'H-NIGHT-CAP', hardSoft: 'HARD', parameter: '3회', justification: '최대 연속 나이트 근무 3회 초과 금지', legalFloor: false },
+  { id: 'rule-elig', ruleType: 'H-ELIG', hardSoft: 'HARD', parameter: '야간불가자 면제', justification: '임산부 및 단시간 근로자 야간 배정 차단', legalFloor: true },
+  { id: 'rule-single-off', ruleType: 'S-SINGLE-OFF', hardSoft: 'SOFT', parameter: '1일 단독 오프 지양', justification: '피로도 경감을 위해 2일 이상 연속 오프 권고', legalFloor: false },
+];
 
 export const PolicyAdminPage: React.FC = () => {
   const [templates, setTemplates] = useState<ShiftTemplate[]>(MOCK_SHIFT_TEMPLATES);
@@ -42,301 +51,320 @@ export const PolicyAdminPage: React.FC = () => {
   };
 
   return (
-    <div className="policy-container">
-      {/* 상단 정책 버전 정보 */}
-      <div className="policy-version-bar">
-        <div className="v-left">
-          <FileText size={20} color="var(--color-brand-primary)" />
-          <div>
-            <div className="v-num">
-              현재 적용 정책 버전: <strong>v{policyVersion.version}</strong>
-              <span className="v-badge">{policyVersion.status}</span>
-            </div>
-            <span className="v-desc">
-              발행일시: {policyVersion.publishedAt ? new Date(policyVersion.publishedAt).toLocaleString() : '미발행'}
-              {' '}(과거 근무표는 발행 당시 버전의 템플릿과 규칙으로 영구 보존됩니다)
-            </span>
+    <div className="policy-view">
+      {/* Policy Version Header Bar */}
+      <div className="policy-banner">
+        <div className="banner-left">
+          <div className="version-pill">
+            <span className="v-num">정책 스냅샷 v{policyVersion.version}</span>
+            <span className="v-status">{policyVersion.status}</span>
           </div>
+          <span className="v-desc">
+            과거 확정 근무표는 생성 당시의 정책 버전 스냅샷을 영구 보존하며, 새 규칙 변경 시 버전이 증가합니다.
+          </span>
         </div>
 
-        <div className="v-right">
+        <div className="banner-right">
           {newVersionDraft && (
-            <button className="publish-v-btn" onClick={handlePublishVersion}>
-              <CheckCircle2 size={16} />
-              <span>새 정책 버전(v{policyVersion.version + 1}) 발행하기</span>
+            <button className="btn-publish-ver" onClick={handlePublishVersion}>
+              <CheckCircle2 size={13} />
+              <span>새 정책 버전(v{policyVersion.version + 1}) 발행</span>
             </button>
           )}
         </div>
       </div>
 
-      <div className="policy-grid">
-        {/* 좌측: 유연한 교대 템플릿 관리 (하드코딩 배제) */}
-        <div className="policy-card">
-          <div className="card-head">
-            <h3 className="card-title">교대 근무 템플릿 관리</h3>
-            <button className="add-shift-btn" onClick={handleAddEveningShift}>
-              <Plus size={14} />
-              <span>3교대(이브닝) 추가 테스트</span>
-            </button>
+      {/* Shift Templates Management Panel */}
+      <div className="section-panel">
+        <div className="panel-toolbar">
+          <div className="toolbar-title">
+            <Clock size={14} />
+            <span className="title-text">병동 근무 템플릿 목록 (Shift Templates)</span>
           </div>
-          <p className="sub-txt">
-            근무 시간, 휴게시간, 기본 부담 점수를 편집합니다. (코드 수준의 D/N 하드코딩 없음)
-          </p>
-
-          <div className="template-table-wrapper">
-            <table className="template-table">
-              <thead>
-                <tr>
-                  <th>미리보기</th>
-                  <th>코드/명칭</th>
-                  <th>시작~종료</th>
-                  <th>휴게(분)</th>
-                  <th>부담 점수</th>
-                  <th>상태</th>
-                </tr>
-              </thead>
-              <tbody>
-                {templates.map((tmpl) => (
-                  <tr key={tmpl.id}>
-                    <td><ShiftCell template={tmpl} isCompact /></td>
-                    <td><strong>{tmpl.code}</strong> ({tmpl.label})</td>
-                    <td>
-                      {tmpl.startsAtLocal} ~ {tmpl.endsAtLocal}
-                      {tmpl.endDayOffset > 0 && <span className="next-tag">익일</span>}
-                    </td>
-                    <td>{tmpl.breakMinutes}분</td>
-                    <td><strong>{tmpl.baseBurdenPoints}점</strong></td>
-                    <td>
-                      <span className="active-tag">{tmpl.isAssignable ? '사용중' : '비활성'}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <button
+            className="btn-add-shift"
+            onClick={handleAddEveningShift}
+            disabled={templates.some((t) => t.code === 'EVENING')}
+          >
+            <Plus size={13} />
+            <span>3교대 이브닝(E) 템플릿 추가</span>
+          </button>
         </div>
 
-        {/* 우측: 필수 법정 제약 (Hard Floor 보호) */}
-        <div className="policy-card">
-          <div className="card-head">
-            <h3 className="card-title">필수 제약 규칙 (Hard Constraints)</h3>
-            <span className="lock-tag">
-              <ShieldCheck size={14} /> 법적 하한선(Floor) 보호됨
-            </span>
+        <div className="table-wrapper">
+          <table className="policy-table">
+            <thead>
+              <tr>
+                <th>코드</th>
+                <th>근무 명칭</th>
+                <th>시작 시각</th>
+                <th>종료 시각</th>
+                <th>익일 종료</th>
+                <th>기본 휴게</th>
+                <th>부담 점수</th>
+                <th>배정 가능</th>
+              </tr>
+            </thead>
+            <tbody>
+              {templates.map((tmpl) => (
+                <tr key={tmpl.id}>
+                  <td>
+                    <ShiftCell template={tmpl} isCompact />
+                  </td>
+                  <td className="font-semibold">{tmpl.label}</td>
+                  <td className="font-mono">{tmpl.startsAtLocal}</td>
+                  <td className="font-mono">{tmpl.endsAtLocal}</td>
+                  <td>
+                    {tmpl.endDayOffset > 0 ? (
+                      <span className="badge-offset">익일 (+{tmpl.endDayOffset}일)</span>
+                    ) : (
+                      <span className="text-muted">당일</span>
+                    )}
+                  </td>
+                  <td className="font-mono">{tmpl.breakMinutes}분</td>
+                  <td className="font-mono">{tmpl.baseBurdenPoints.toFixed(2)}점</td>
+                  <td>
+                    {tmpl.isAssignable ? (
+                      <span className="badge-ok">할당 가능</span>
+                    ) : (
+                      <span className="text-muted">비할당</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Domain Rules & Hard Constraints Panel */}
+      <div className="section-panel">
+        <div className="panel-toolbar">
+          <div className="toolbar-title">
+            <SlidersHorizontal size={14} />
+            <span className="title-text">도메인 제약 및 규칙 설정 (Domain Rules)</span>
           </div>
-          <p className="sub-txt">
-            환자 안전 및 근로기준법/특례 규정에 따라 아래 항목은 시스템에서 임의로 완화할 수 없습니다.
-          </p>
+          <span className="toolbar-sub">H-REST, H-ELIG 등 법적 기준(legal_floor)은 임의 완화 불가</span>
+        </div>
 
-          <div className="rule-list">
-            <div className="rule-item protected">
-              <div className="r-head">
-                <strong>H-REST: 근무 간 최소 휴식 시간 보장</strong>
-                <span className="prot-pill">완화 불가 (Legal Floor)</span>
-              </div>
-              <div className="r-body">
-                <span>기준값: <strong>660분 (11시간 연속 휴식)</strong></span>
-                <span className="r-desc">근무 종료 후 다음 근무 시작까지 11시간 미만 배정은 하드 에러로 차단됩니다.</span>
-              </div>
-            </div>
-
-            <div className="rule-item protected">
-              <div className="r-head">
-                <strong>H-WEEK: 주당 실근로시간 상한</strong>
-                <span className="prot-pill">완화 불가 (Legal Floor)</span>
-              </div>
-              <div className="r-body">
-                <span>기준값: <strong>3,120분 (주 52시간)</strong></span>
-                <span className="r-desc">휴게시간을 제외한 실근로시간 기준 주 52시간 초과 배정을 엄격히 제한합니다.</span>
-              </div>
-            </div>
-
-            <div className="rule-item">
-              <div className="r-head">
-                <strong>H-CONSEC: 최대 연속 근무일수</strong>
-                <span className="conf-pill">병동 설정</span>
-              </div>
-              <div className="r-body">
-                <span>기준값: <strong>5일</strong> (5일째 도달 시 +1.0점 가산 및 6일째 배정 금지)</span>
-              </div>
-            </div>
-
-            <div className="rule-item">
-              <div className="r-head">
-                <strong>H-OFF-MIN: 월간 최소 보장 오프 일수</strong>
-                <span className="conf-pill">병동 설정</span>
-              </div>
-              <div className="r-body">
-                <span>기준값: <strong>8일</strong></span>
-              </div>
-            </div>
-          </div>
+        <div className="table-wrapper">
+          <table className="policy-table">
+            <thead>
+              <tr>
+                <th>규칙 ID</th>
+                <th>분류</th>
+                <th>규칙 내용</th>
+                <th>기본 기준 파라미터</th>
+                <th>법적 최저기준</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DOMAIN_RULES_LIST.map((rule) => (
+                <tr key={rule.id}>
+                  <td className="font-mono font-semibold">{rule.ruleType}</td>
+                  <td>
+                    <span className={`tag-strength ${rule.hardSoft.toLowerCase()}`}>
+                      {rule.hardSoft}
+                    </span>
+                  </td>
+                  <td>{rule.justification}</td>
+                  <td className="font-mono">{rule.parameter}</td>
+                  <td>
+                    {rule.legalFloor ? (
+                      <span className="badge-legal">법적 보호 (legal_floor)</span>
+                    ) : (
+                      <span className="text-muted">내부 병동 규칙</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       <style>{`
-        .policy-container {
+        .policy-view {
           display: flex;
           flex-direction: column;
           gap: var(--space-4);
         }
-        .policy-version-bar {
-          background-color: var(--color-bg-surface);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-3) var(--space-4);
+
+        /* Banner */
+        .policy-banner {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          padding: 8px var(--space-4);
         }
-        .v-left {
+        .banner-left {
           display: flex;
           align-items: center;
           gap: var(--space-3);
         }
-        .v-num {
-          font-size: var(--font-size-base);
-        }
-        .v-badge {
-          margin-left: var(--space-2);
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--color-success);
-          background-color: var(--color-success-bg);
-          padding: 2px 6px;
+        .version-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background-color: var(--color-bg-subtle);
+          border: 1px solid var(--color-border);
+          padding: 2px 8px;
           border-radius: var(--radius-sm);
+          font-size: 12px;
+        }
+        .v-num {
+          font-weight: 700;
+          color: var(--color-text-primary);
+        }
+        .v-status {
+          font-size: 10px;
+          font-weight: 600;
+          color: #047857;
+          background-color: #ECFDF5;
+          padding: 1px 4px;
+          border-radius: 2px;
         }
         .v-desc {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
+          font-size: 12px;
+          color: var(--color-text-muted);
         }
-        .publish-v-btn {
+
+        .btn-publish-ver {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 28px;
+          padding: 0 10px;
+          background-color: var(--color-primary);
+          color: #fff;
+          border-radius: var(--radius-sm);
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        /* Section Panels */
+        .section-panel {
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          overflow: hidden;
+        }
+        .panel-toolbar {
+          padding: 8px var(--space-3);
+          background-color: var(--color-bg-subtle);
+          border-bottom: 1px solid var(--color-border);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .toolbar-title {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 14px;
-          background-color: var(--color-brand-primary);
-          color: white;
-          border: none;
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
-          font-weight: 700;
-          cursor: pointer;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-primary);
         }
-        .policy-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: var(--space-4);
+        .toolbar-sub {
+          font-size: 11px;
+          color: var(--color-text-muted);
         }
-        .policy-card {
+        .btn-add-shift {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          height: 26px;
+          padding: 0 8px;
           background-color: var(--color-bg-surface);
           border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-4);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-3);
-        }
-        .card-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .card-title {
-          font-size: var(--font-size-sm);
-          font-weight: 700;
-        }
-        .sub-txt {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
-        }
-        .add-shift-btn {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          padding: 4px 8px;
-          background-color: var(--color-brand-light);
-          color: var(--color-brand-primary);
-          border: 1px solid #BAE6FD;
           border-radius: var(--radius-sm);
           font-size: 11px;
-          font-weight: 700;
-          cursor: pointer;
+          font-weight: 500;
+          color: var(--color-text-secondary);
         }
-        .template-table {
+        .btn-add-shift:hover:not(:disabled) {
+          background-color: var(--color-bg-muted);
+          color: var(--color-text-primary);
+        }
+        .btn-add-shift:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        /* Table */
+        .table-wrapper {
+          overflow-x: auto;
+        }
+        .policy-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: var(--font-size-xs);
+          font-size: 12px;
         }
-        .template-table th, .template-table td {
-          padding: 8px;
-          border-bottom: 1px solid var(--color-border);
+        .policy-table th {
+          background-color: #FAFAFA;
+          padding: 6px 12px;
           text-align: left;
+          font-weight: 600;
+          font-size: 11px;
+          color: var(--color-text-secondary);
+          border-bottom: 1px solid var(--color-border);
         }
-        .next-tag {
-          font-size: 10px;
-          color: var(--color-warning);
-          font-weight: 700;
-          margin-left: 4px;
+        .policy-table td {
+          padding: 8px 12px;
+          border-bottom: 1px solid var(--color-border-subtle);
+          color: var(--color-text-primary);
         }
-        .active-tag {
+        .policy-table tr:hover td {
+          background-color: #FAFAFA;
+        }
+        .font-semibold {
+          font-weight: 600;
+        }
+        .font-mono {
+          font-feature-settings: "tnum";
+          font-size: 11px;
+        }
+        .text-muted {
+          color: var(--color-text-muted);
+          font-size: 11px;
+        }
+        .badge-offset {
           font-size: 10px;
-          color: var(--color-success);
-          background-color: var(--color-success-bg);
-          padding: 2px 4px;
+          font-weight: 600;
+          color: #6D28D9;
+          background-color: #F5F3FF;
+          padding: 1px 5px;
           border-radius: 2px;
         }
-        .lock-tag {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 11px;
-          color: var(--color-danger);
-          font-weight: 700;
+        .badge-ok {
+          font-size: 10px;
+          color: #15803D;
+          font-weight: 600;
         }
-        .rule-list {
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-3);
-        }
-        .rule-item {
-          background-color: var(--color-bg-muted);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-sm);
-          padding: var(--space-3);
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-        .rule-item.protected {
-          border-left: 3px solid var(--color-danger);
-        }
-        .r-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: var(--font-size-xs);
-        }
-        .prot-pill {
+        .tag-strength {
           font-size: 10px;
           font-weight: 700;
-          color: var(--color-danger);
-          background-color: var(--color-danger-bg);
-          padding: 1px 6px;
-          border-radius: var(--radius-sm);
+          padding: 1px 5px;
+          border-radius: 2px;
         }
-        .conf-pill {
+        .tag-strength.hard {
+          background-color: #FEF2F2;
+          color: #B91C1C;
+        }
+        .tag-strength.soft {
+          background-color: #FFFBEB;
+          color: #B45309;
+        }
+        .badge-legal {
           font-size: 10px;
-          color: var(--color-text-secondary);
-        }
-        .r-body {
-          display: flex;
-          flex-direction: column;
-          font-size: 11px;
-          gap: 2px;
-        }
-        .r-desc {
-          color: var(--color-text-secondary);
+          font-weight: 600;
+          color: #B91C1C;
+          background-color: #FEE2E2;
+          padding: 1px 5px;
+          border-radius: 2px;
         }
       `}</style>
     </div>

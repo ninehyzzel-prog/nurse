@@ -6,13 +6,13 @@ export const MobileLayout: React.FC = () => {
   return (
     <div className="mobile-shell">
       <header className="mobile-header">
-        <div className="brand">
-          <span className="ward-badge">산부인과 병동</span>
-          <h1 className="app-title">근무 스케줄</h1>
+        <div className="header-left">
+          <span className="ward-pill">산부인과</span>
+          <h1 className="header-title">근무 스케줄</h1>
         </div>
-        <Link to="/admin/roster/2026-11" className="switch-mode-btn" title="관리자 모드로 전환">
-          <Shield size={16} />
-          <span>관리자(PC)</span>
+        <Link to="/admin/roster/2026-11" className="switch-desktop-btn" title="관리자 콘솔로 전환">
+          <Shield size={13} strokeWidth={2.2} />
+          <span>관리자</span>
         </Link>
       </header>
 
@@ -21,37 +21,39 @@ export const MobileLayout: React.FC = () => {
       </main>
 
       <nav className="mobile-bottom-nav">
-        <NavLink to="/me/schedule" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Calendar size={20} />
+        <NavLink to="/me/schedule" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
+          <Calendar size={18} strokeWidth={2} />
           <span>내 근무</span>
         </NavLink>
-        <NavLink to="/me/requests/new" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <FilePlus2 size={20} />
+        <NavLink to="/me/requests/new" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
+          <FilePlus2 size={18} strokeWidth={2} />
           <span>오프 신청</span>
         </NavLink>
-        <NavLink to="/me/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <ListChecks size={20} />
+        <NavLink to="/me/requests" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
+          <ListChecks size={18} strokeWidth={2} />
           <span>신청 내역</span>
         </NavLink>
-        <NavLink to="/me/notifications" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <Bell size={20} />
+        <NavLink to="/me/notifications" className={({ isActive }) => `m-nav-item ${isActive ? 'active' : ''}`}>
+          <Bell size={18} strokeWidth={2} />
           <span>알림</span>
         </NavLink>
       </nav>
 
       <style>{`
         .mobile-shell {
-          max-width: 480px;
+          max-width: 440px;
           margin: 0 auto;
           min-height: 100vh;
           background-color: var(--color-bg-surface);
+          border-left: 1px solid var(--color-border);
+          border-right: 1px solid var(--color-border);
           display: flex;
           flex-direction: column;
-          box-shadow: var(--shadow-md);
           position: relative;
         }
         .mobile-header {
-          padding: var(--space-3) var(--space-4);
+          height: 48px;
+          padding: 0 var(--space-4);
           background-color: var(--color-bg-surface);
           border-bottom: 1px solid var(--color-border);
           display: flex;
@@ -61,36 +63,48 @@ export const MobileLayout: React.FC = () => {
           top: 0;
           z-index: 100;
         }
-        .ward-badge {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--color-brand-primary);
-          background-color: var(--color-brand-light);
-          padding: 2px 6px;
-          border-radius: var(--radius-sm);
-        }
-        .app-title {
-          font-size: var(--font-size-base);
-          font-weight: 700;
-          color: var(--color-text-primary);
-        }
-        .switch-mode-btn {
+        .header-left {
           display: flex;
           align-items: center;
+          gap: 6px;
+        }
+        .ward-pill {
+          font-size: 10px;
+          font-weight: 600;
+          color: #2563EB;
+          background-color: #EFF6FF;
+          border: 1px solid #BFDBFE;
+          padding: 1px 5px;
+          border-radius: var(--radius-xs);
+          line-height: 1.2;
+        }
+        .header-title {
+          font-size: var(--text-sm);
+          font-weight: 700;
+          color: var(--color-text-primary);
+          margin: 0;
+        }
+        .switch-desktop-btn {
+          display: inline-flex;
+          align-items: center;
           gap: 4px;
-          font-size: var(--font-size-xs);
-          padding: 6px 10px;
-          background-color: var(--color-bg-muted);
+          height: 26px;
+          padding: 0 8px;
+          background-color: var(--color-bg-subtle);
+          border: 1px solid var(--color-border);
           border-radius: var(--radius-sm);
           color: var(--color-text-secondary);
+          font-size: 11px;
           font-weight: 600;
+          transition: background-color 0.12s;
         }
-        .switch-mode-btn:hover {
-          background-color: var(--color-border);
+        .switch-desktop-btn:hover {
+          background-color: var(--color-bg-muted);
+          color: var(--color-text-primary);
         }
         .mobile-main {
           flex: 1;
-          padding-bottom: 72px; /* Bottom nav height */
+          padding-bottom: 64px; /* Bottom nav height */
         }
         .mobile-bottom-nav {
           position: fixed;
@@ -98,8 +112,8 @@ export const MobileLayout: React.FC = () => {
           left: 50%;
           transform: translateX(-50%);
           width: 100%;
-          max-width: 480px;
-          height: 64px;
+          max-width: 440px;
+          height: 56px;
           background-color: var(--color-bg-surface);
           border-top: 1px solid var(--color-border);
           display: flex;
@@ -107,21 +121,25 @@ export const MobileLayout: React.FC = () => {
           justify-content: space-around;
           z-index: 200;
         }
-        .nav-item {
+        .m-nav-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
-          min-width: 44px;
-          min-height: 44px;
           justify-content: center;
-          color: var(--color-text-secondary);
-          font-size: var(--font-size-xs);
+          gap: 3px;
+          min-width: 56px;
+          height: 44px;
+          color: var(--color-text-muted);
+          font-size: 10px;
           font-weight: 500;
+          transition: color 0.12s;
         }
-        .nav-item.active {
-          color: var(--color-brand-primary);
-          font-weight: 700;
+        .m-nav-item:hover {
+          color: var(--color-text-primary);
+        }
+        .m-nav-item.active {
+          color: var(--color-primary);
+          font-weight: 600;
         }
       `}</style>
     </div>

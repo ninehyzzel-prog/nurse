@@ -2,17 +2,12 @@ import React, { useState } from 'react';
 import { MOCK_REQUESTS } from '../../data/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import type { TimeOffRequest } from '../../types';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  ShieldAlert
-} from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 export const ConflictResolverPage: React.FC = () => {
   const [requests, setRequests] = useState<TimeOffRequest[]>(MOCK_REQUESTS);
   const selectedDate = '2026-11-14'; // 경합 일자
 
-  // 11월 14일 신청자 목록 (김간호사 A, 이간호사 B)
   const conflictRequests = requests.filter((r) => r.dates.includes(selectedDate));
 
   const handleApprove = (reqId: string) => {
@@ -26,345 +21,420 @@ export const ConflictResolverPage: React.FC = () => {
   };
 
   return (
-    <div className="conflict-container">
-      <div className="conflict-header">
+    <div className="conflict-view">
+      {/* Page Header */}
+      <div className="view-header">
         <div>
-          <h2 className="title">오프 · 휴가 신청 충돌 해결 콘솔</h2>
-          <span className="desc">
-            동일 일자에 필요 최소 인원을 초과하여 오프가 신청된 경우, 객관적 공정성 점수에 기반하여 조율합니다.
-          </span>
-        </div>
-        <div className="conflict-pill">
-          <AlertTriangle size={16} />
-          <span>경합 발생 1건</span>
+          <div className="header-meta-row">
+            <h2 className="view-title">오프 · 휴가 신청 충돌 해결 콘솔</h2>
+            <span className="conflict-badge">경합 1건 감지</span>
+          </div>
+          <p className="view-desc">
+            동일 일자에 필수 근무 정원을 초과하여 오프가 경합된 경우, 도메인 가중 점수에 기반해 투명하게 조율합니다.
+          </p>
         </div>
       </div>
 
-      <div className="conflict-body">
-        {/* 좌측: 경합 날짜 카드 */}
-        <div className="conflict-date-card">
-          <div className="card-top">
-            <span className="date-badge">2026년 11월 14일 (토)</span>
-            <span className="badge-danger">정원 초과 경합</span>
-          </div>
+      <div className="conflict-layout">
+        {/* Left: Summary Column */}
+        <div className="summary-col">
+          <div className="section-panel">
+            <div className="panel-head">
+              <span className="head-title">경합 상세 현황</span>
+              <span className="date-tag">2026-11-14 (토)</span>
+            </div>
 
-          <div className="stats-box">
-            <div className="stat-line">
-              <span>병동 가용 인력:</span>
-              <strong>6명</strong>
+            <div className="metric-list">
+              <div className="metric-row">
+                <span className="metric-lbl">병동 총 인력</span>
+                <span className="metric-val">6명</span>
+              </div>
+              <div className="metric-row">
+                <span className="metric-lbl">필수 최소 커버리지</span>
+                <span className="metric-val">Day 1 · Night 1 (2명)</span>
+              </div>
+              <div className="metric-row highlight">
+                <span className="metric-lbl">동시 오프 신청자</span>
+                <span className="metric-val danger">2명 (수용 가능: 1명)</span>
+              </div>
             </div>
-            <div className="stat-line">
-              <span>필수 커버리지 (주말):</span>
-              <strong>Day 1명 / Night 1명 (최소 2명)</strong>
-            </div>
-            <div className="stat-line">
-              <span>신청 건수:</span>
-              <strong className="text-danger">2명 동시 신청 (1명만 수용 가능)</strong>
-            </div>
-          </div>
 
-          <div className="recommendation-banner">
-            <div className="rec-title">
-              <CheckCircle2 size={16} color="var(--color-success)" />
-              <strong>시스템 최적화 추천 권고</strong>
+            <div className="rec-box">
+              <div className="rec-head">
+                <CheckCircle2 size={14} className="rec-icon" />
+                <span className="rec-head-text">시스템 최적 권고안</span>
+              </div>
+              <p className="rec-body">
+                <strong>김간호사 (A)</strong>의 오프를 우선 승인하는 것을 권장합니다.
+                동일 경력군 대비 최근 3개월 주말 OFF 2회 부족 및 업무부담 누적 점수가 상대적으로 높습니다.
+              </p>
             </div>
-            <p className="rec-text">
-              <strong>김간호사 (A)</strong>의 신청을 우선 승인하는 것을 권장합니다.
-              <br />
-              (이유: 동종 비교그룹 대비 최근 3개월 주말 OFF 2회 부족 및 근무부담 7% 초과 누적)
-            </p>
           </div>
         </div>
 
-        {/* 우측: 경합자 투명 점수 비교 패널 */}
-        <div className="applicants-panel">
-          <h3 className="panel-title">신청자 공정성 점수 비교 (QA-SCORE-02 명세)</h3>
+        {/* Right: Transparent Applicant Scoring Panel */}
+        <div className="scoring-col">
+          <div className="section-panel">
+            <div className="panel-head">
+              <span className="head-title">신청자 공정성 점수 비교 분석 (QA-SCORE-02)</span>
+              <span className="rule-ref">산식: 기본가중치 + 결손 + 누적부담</span>
+            </div>
 
-          <div className="applicant-cards">
-            {conflictRequests.map((req) => {
-              const isRecommended = req.staffId === 'staff-1'; // 김간호사 (35점)
+            <div className="applicant-grid">
+              {conflictRequests.map((req) => {
+                const isRecommended = req.staffId === 'staff-1';
+                const breakdown = req.priorityBreakdown;
 
-              return (
-                <div key={req.id} className={`app-card ${isRecommended ? 'recommended' : ''}`}>
-                  <div className="app-card-head">
-                    <div className="staff-meta">
-                      <span className="name">{req.staffName}</span>
-                      <span className="role-tag">
-                        {req.staffId === 'staff-1' ? '간호사 A (책임)' : '간호사 B (선임)'}
-                      </span>
-                    </div>
-                    <div className="score-total">
-                      <span className="lbl">경합 우선순위 점수</span>
-                      <span className="val">{req.priorityPoints}점</span>
-                    </div>
-                  </div>
-
-                  {/* 세부 점수 Breakdown */}
-                  {req.priorityBreakdown && (
-                    <div className="breakdown-grid">
-                      <div className="b-item">
-                        <span className="k">주말 OFF 부족 가산:</span>
-                        <strong className="v">+{req.priorityBreakdown.weekendDeficitPoints}점</strong>
-                        <span className="sub">(부족 {req.priorityBreakdown.weekendDeficitPoints / 10}회 x 10)</span>
+                return (
+                  <div key={req.id} className={`applicant-card ${isRecommended ? 'is-recommended' : ''}`}>
+                    <div className="card-topbar">
+                      <div className="applicant-meta">
+                        <span className="app-name">{req.staffName}</span>
+                        <span className="app-role">{req.staffId === 'staff-1' ? '간호사 A (책임)' : '간호사 B (선임)'}</span>
+                        <StatusBadge status={req.status} />
                       </div>
-                      <div className="b-item">
-                        <span className="k">희망 미반영 누적:</span>
-                        <strong className="v">+{req.priorityBreakdown.ungrantedPoints}점</strong>
-                        <span className="sub">(미반영 {req.priorityBreakdown.ungrantedPoints / 8}회 x 8)</span>
-                      </div>
-                      <div className="b-item">
-                        <span className="k">근무 부담 초과 가산:</span>
-                        <strong className="v">+{req.priorityBreakdown.burdenExcessPoints}점</strong>
-                        <span className="sub">({req.priorityBreakdown.burdenExcessPoints}% 초과)</span>
-                      </div>
-                      <div className="b-item">
-                        <span className="k">중요 요청 가산:</span>
-                        <strong className="v">+{req.priorityBreakdown.importancePoints}점</strong>
-                        <span className="sub">{req.isImportant ? '지정됨 (+10)' : '일반'}</span>
+                      <div className="score-badge">
+                        <span className="score-num">{req.priorityPoints}</span>
+                        <span className="score-unit">점</span>
                       </div>
                     </div>
-                  )}
 
-                  <div className="app-card-foot">
-                    <div className="status-area">
-                      <StatusBadge status={req.status} />
+                    {isRecommended && (
+                      <div className="recommended-ribbon">
+                        <span>★ 우선 승인 추천 대상</span>
+                      </div>
+                    )}
+
+                    {/* Breakdown Table */}
+                    <div className="score-table-wrapper">
+                      <table className="score-table">
+                        <thead>
+                          <tr>
+                            <th>평가 지표</th>
+                            <th>도메인 기준치</th>
+                            <th className="align-right">산출 점수</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>주말 OFF 결손 가산점</td>
+                            <td className="muted-text">최근 3개월 결손 {isRecommended ? '2회' : '1회'}</td>
+                            <td className="align-right font-mono">+{breakdown?.weekendDeficitPoints}점</td>
+                          </tr>
+                          <tr>
+                            <td>이전 미반영 신청 보상</td>
+                            <td className="muted-text">직전월 탈락 누적</td>
+                            <td className="align-right font-mono">+{breakdown?.ungrantedPoints}점</td>
+                          </tr>
+                          <tr>
+                            <td>최근 근무부담 초과율</td>
+                            <td className="muted-text">병동 평균 대비 초과</td>
+                            <td className="align-right font-mono">+{breakdown?.burdenExcessPoints}점</td>
+                          </tr>
+                          <tr>
+                            <td>신청 중요도 보너스</td>
+                            <td className="muted-text">{req.isImportant ? '중요 표시(연 3회 제한)' : '일반 희망'}</td>
+                            <td className="align-right font-mono">+{breakdown?.importancePoints}점</td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <td colSpan={2} className="total-label">총 경합 우선순위 합계</td>
+                            <td className="align-right total-val font-mono">{req.priorityPoints}점</td>
+                          </tr>
+                        </tfoot>
+                      </table>
                     </div>
-                    <div className="actions">
+
+                    <div className="card-actions">
                       <button
-                        className="btn-approve"
+                        className={`action-btn ${isRecommended ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => handleApprove(req.id)}
                         disabled={req.status === 'APPROVED'}
                       >
-                        {req.status === 'APPROVED' ? '승인 완료됨' : '이 신청 승인하기'}
+                        {req.status === 'APPROVED' ? '승인 반영 완료됨' : `${req.staffName} 오프 승인`}
                       </button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="privacy-guidance">
-            <ShieldAlert size={16} />
-            <span>
-              <strong>개인정보 보호 원칙:</strong> 위 점수 및 이력 세부 근거는 작성자(수간호사) 화면에만 노출되며, 간호사 개인에게는 동료의 구체적 점수나 사유가 공개되지 않습니다.
-            </span>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       <style>{`
-        .conflict-container {
+        .conflict-view {
           display: flex;
           flex-direction: column;
           gap: var(--space-4);
         }
-        .conflict-header {
+
+        .header-meta-row {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          background-color: var(--color-bg-surface);
-          padding: var(--space-4);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
+          gap: var(--space-2);
+          margin-bottom: 2px;
         }
-        .title {
-          font-size: var(--font-size-base);
+        .view-title {
+          font-size: var(--text-lg);
           font-weight: 700;
+          color: var(--color-text-primary);
+          margin: 0;
         }
-        .desc {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
-        }
-        .conflict-pill {
-          display: flex;
+        .conflict-badge {
+          display: inline-flex;
           align-items: center;
-          gap: 6px;
-          background-color: var(--color-warning-bg);
-          color: var(--color-warning);
-          font-weight: 700;
-          font-size: var(--font-size-xs);
-          padding: 6px 12px;
-          border-radius: var(--radius-full);
+          padding: 1px 7px;
+          border-radius: var(--radius-sm);
+          font-size: 11px;
+          font-weight: 600;
+          background-color: #FEF3C7;
           border: 1px solid #FDE68A;
+          color: #B45309;
         }
-        .conflict-body {
+        .view-desc {
+          font-size: var(--text-xs);
+          color: var(--color-text-muted);
+          margin: 0;
+        }
+
+        /* Two-Column Layout */
+        .conflict-layout {
           display: grid;
-          grid-template-columns: 320px 1fr;
+          grid-template-columns: 280px 1fr;
           gap: var(--space-4);
+          align-items: start;
         }
-        .conflict-date-card {
+
+        .section-panel {
           background-color: var(--color-bg-surface);
           border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-4);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-4);
+          border-radius: var(--radius-sm);
+          overflow: hidden;
         }
-        .card-top {
+        .panel-head {
+          padding: 10px var(--space-3);
+          border-bottom: 1px solid var(--color-border);
+          background-color: var(--color-bg-subtle);
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
-        .date-badge {
-          font-size: var(--font-size-sm);
-          font-weight: 700;
+        .head-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--color-text-primary);
         }
-        .badge-danger {
+        .date-tag, .rule-ref {
           font-size: 11px;
-          font-weight: 700;
-          color: var(--color-danger);
-          background-color: var(--color-danger-bg);
-          padding: 2px 6px;
-          border-radius: var(--radius-sm);
-        }
-        .stats-box {
-          background-color: var(--color-bg-muted);
-          border-radius: var(--radius-sm);
-          padding: var(--space-3);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-2);
-          font-size: var(--font-size-xs);
-        }
-        .stat-line {
-          display: flex;
-          justify-content: space-between;
-        }
-        .text-danger {
-          color: var(--color-danger);
-        }
-        .recommendation-banner {
-          background-color: var(--color-success-bg);
-          border: 1px solid #BBF7D0;
-          border-radius: var(--radius-sm);
-          padding: var(--space-3);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-2);
-        }
-        .rec-title {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: var(--font-size-xs);
-          color: var(--color-success);
-        }
-        .rec-text {
-          font-size: var(--font-size-xs);
-          color: #14532D;
-          line-height: 1.4;
-        }
-        .applicants-panel {
-          background-color: var(--color-bg-surface);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-4);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-4);
-        }
-        .panel-title {
-          font-size: var(--font-size-sm);
-          font-weight: 700;
-        }
-        .applicant-cards {
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-3);
-        }
-        .app-card {
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: var(--space-4);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-3);
-        }
-        .app-card.recommended {
-          border-color: var(--color-brand-primary);
-          background-color: #F0F9FF;
-        }
-        .app-card-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .staff-meta {
-          display: flex;
-          align-items: center;
-          gap: var(--space-2);
-        }
-        .staff-meta .name {
-          font-size: var(--font-size-base);
-          font-weight: 700;
-        }
-        .staff-meta .role-tag {
-          font-size: 11px;
-          color: var(--color-text-secondary);
-        }
-        .score-total {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-        }
-        .score-total .lbl {
-          font-size: 10px;
           color: var(--color-text-muted);
         }
-        .score-total .val {
-          font-size: var(--font-size-lg);
-          font-weight: 800;
-          color: var(--color-brand-primary);
-        }
-        .breakdown-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-2);
-          background-color: var(--color-bg-surface);
+
+        /* Summary Column */
+        .metric-list {
           padding: var(--space-3);
-          border-radius: var(--radius-sm);
-          border: 1px solid var(--color-border);
-        }
-        .b-item {
           display: flex;
           flex-direction: column;
-          font-size: 11px;
+          gap: 8px;
         }
-        .b-item .k { color: var(--color-text-secondary); margin-bottom: 2px; }
-        .b-item .v { font-size: var(--font-size-sm); color: var(--color-text-primary); }
-        .b-item .sub { font-size: 10px; color: var(--color-text-muted); }
-        .app-card-foot {
+        .metric-row {
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          padding-top: var(--space-2);
-          border-top: 1px solid var(--color-border);
+          align-items: center;
+          font-size: 12px;
         }
-        .btn-approve {
-          padding: 8px 16px;
-          background-color: var(--color-brand-primary);
-          color: white;
-          border: none;
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
-          font-weight: 700;
-          cursor: pointer;
+        .metric-lbl {
+          color: var(--color-text-secondary);
         }
-        .btn-approve:disabled {
-          background-color: var(--color-success);
-          cursor: default;
+        .metric-val {
+          font-weight: 600;
+          color: var(--color-text-primary);
         }
-        .privacy-guidance {
+        .metric-val.danger {
+          color: var(--color-danger);
+        }
+        .metric-row.highlight {
+          padding-top: 6px;
+          border-top: 1px solid var(--color-border-subtle);
+        }
+
+        .rec-box {
+          margin: 0 var(--space-3) var(--space-3);
+          padding: var(--space-2-5);
+          background-color: #F0FDF4;
+          border: 1px solid #BBF7D0;
+          border-radius: var(--radius-xs);
+        }
+        .rec-head {
           display: flex;
           align-items: center;
-          gap: var(--space-2);
-          padding: var(--space-3);
-          background-color: var(--color-bg-muted);
-          border-radius: var(--radius-sm);
+          gap: 5px;
+          margin-bottom: 4px;
+        }
+        .rec-icon {
+          color: #16A34A;
+        }
+        .rec-head-text {
+          font-size: 12px;
+          font-weight: 600;
+          color: #15803D;
+        }
+        .rec-body {
           font-size: 11px;
+          line-height: 1.4;
+          color: #166534;
+          margin: 0;
+        }
+
+        /* Scoring Column */
+        .applicant-grid {
+          padding: var(--space-3);
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-3);
+        }
+        .applicant-card {
+          background-color: var(--color-bg-surface);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          padding: var(--space-3);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-2-5);
+          position: relative;
+        }
+        .applicant-card.is-recommended {
+          border-color: #86EFAC;
+          background-color: #FAFCFA;
+        }
+        .card-topbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+        .applicant-meta {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .app-name {
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--color-text-primary);
+        }
+        .app-role {
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+        .score-badge {
+          display: flex;
+          align-items: baseline;
+          gap: 2px;
+          padding: 2px 8px;
+          background-color: var(--color-bg-subtle);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+        }
+        .score-num {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--color-text-primary);
+          font-feature-settings: "tnum";
+        }
+        .score-unit {
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+
+        .recommended-ribbon {
+          font-size: 11px;
+          font-weight: 600;
+          color: #15803D;
+          background-color: #DCFCE7;
+          border: 1px solid #BBF7D0;
+          padding: 2px 6px;
+          border-radius: var(--radius-xs);
+          display: inline-block;
+          align-self: flex-start;
+        }
+
+        /* Score Table */
+        .score-table-wrapper {
+          border: 1px solid var(--color-border-subtle);
+          border-radius: var(--radius-xs);
+          overflow: hidden;
+        }
+        .score-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 11px;
+        }
+        .score-table th {
+          background-color: var(--color-bg-subtle);
+          padding: 5px 8px;
+          text-align: left;
+          font-weight: 600;
           color: var(--color-text-secondary);
+          border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .score-table td {
+          padding: 5px 8px;
+          border-bottom: 1px solid var(--color-border-subtle);
+          color: var(--color-text-primary);
+        }
+        .muted-text {
+          color: var(--color-text-muted);
+        }
+        .align-right {
+          text-align: right;
+        }
+        .font-mono {
+          font-feature-settings: "tnum";
+          font-weight: 600;
+        }
+        .total-label {
+          font-weight: 600;
+          background-color: var(--color-bg-subtle);
+        }
+        .total-val {
+          font-weight: 700;
+          font-size: 12px;
+          background-color: var(--color-bg-subtle);
+          color: var(--color-primary);
+        }
+
+        .card-actions {
+          margin-top: auto;
+          padding-top: var(--space-2);
+        }
+        .action-btn {
+          width: 100%;
+          height: 30px;
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 600;
+          transition: background-color 0.12s;
+        }
+        .action-btn.btn-primary {
+          background-color: var(--color-primary);
+          color: var(--color-primary-text);
+        }
+        .action-btn.btn-primary:hover:not(:disabled) {
+          background-color: var(--color-primary-hover);
+        }
+        .action-btn.btn-secondary {
+          background-color: var(--color-bg-subtle);
+          border: 1px solid var(--color-border);
+          color: var(--color-text-secondary);
+        }
+        .action-btn.btn-secondary:hover:not(:disabled) {
+          background-color: var(--color-bg-muted);
+          color: var(--color-text-primary);
+        }
+        .action-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
       `}</style>
     </div>
