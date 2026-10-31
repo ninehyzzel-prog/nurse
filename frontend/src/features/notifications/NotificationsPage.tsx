@@ -71,13 +71,13 @@ export const NotificationsPage: React.FC = () => {
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'LEAVE_APPROVED':
-        return <TossIcon name="heart" size={18} />;
+        return <TossIcon name="heart" size={22} />;
       case 'SCHEDULE_CONFIRMED':
-        return <TossIcon name="calendar" size={18} />;
+        return <TossIcon name="calendar" size={22} />;
       case 'REQUEST_OPEN':
-        return <TossIcon name="megaphone" size={18} />;
+        return <TossIcon name="megaphone" size={22} />;
       case 'SHIFT_CHANGE':
-        return <TossIcon name="refresh" size={18} />;
+        return <TossIcon name="refresh" size={22} />;
     }
   };
 
@@ -123,9 +123,7 @@ export const NotificationsPage: React.FC = () => {
             onClick={() => handleClickItem(item)}
           >
             <div className="notif-icon-col">
-              <div className="icon-circle">
-                {getIcon(item.type)}
-              </div>
+              {getIcon(item.type)}
             </div>
 
             <div className="notif-content-col">
@@ -222,28 +220,15 @@ export const NotificationsPage: React.FC = () => {
           border-color: #CBD5E1;
         }
         .notif-card.unread {
-          border-left: 3px solid #0F172A;
           background-color: #FFFFFF;
         }
 
         .notif-icon-col {
           flex-shrink: 0;
-          margin-top: 1px;
-        }
-        .icon-circle {
-          width: 34px;
-          height: 34px;
-          border-radius: 8px;
-          background-color: #F8FAFC;
-          border: 1px solid #F1F5F9;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          align-items: flex-start;
+          padding-top: 2px;
         }
-        .notif-icon.green { color: #166534; }
-        .notif-icon.blue { color: #1D4ED8; }
-        .notif-icon.purple { color: #7E22CE; }
-        .notif-icon.pink { color: #E11D48; }
 
         .notif-content-col {
           flex: 1;
